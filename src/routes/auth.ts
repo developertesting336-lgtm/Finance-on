@@ -30,6 +30,8 @@ router.post('/login', login);
 
 // 5. POST /api/auth/google - Sign in / sign up with Google ID token
 router.post('/google', googleLogin);
+router.post('/callback/google', googleLogin);
+router.get('/callback/google', googleLogin);
 
 // 6. GET /api/auth/me - Get current logged-in user profile (Protected)
 router.get('/me', authenticateToken, getProfile);
