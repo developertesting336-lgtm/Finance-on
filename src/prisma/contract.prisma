@@ -1,0 +1,63 @@
+// use prisma-next
+
+// ─── Company ───────────────────────────────────────────
+model Company {
+  id        Int                       @id @default(autoincrement())
+  name      String                    @unique
+  isHolding Boolean                   @default(false)
+  createdAt TimestamptzString         @default(now())
+  updatedAt temporal.updatedAtString()
+
+  movements Movement[]
+}
+
+enum Role {
+  @@type("pg/text@1")
+  Admin           = "Admin"
+  Management      = "Management"
+  Finance         = "Finance"
+  CompanyManager  = "Company Manager"
+  Auditor         = "Auditor"
+}
+
+// ─── User ──────────────────────────────────────────────
+// Roles: Admin, Management, Finance, Company Manager, Auditor
+model User {
+  id                    Int                       @id @default(autoincrement())
+  email                 String                    @unique
+  fullName              String?
+  googleId              String?                   @unique  
+  password              String?
+  isEmailVerified        Boolean                   @default(false)
+  verificationCode       String?
+  verificationExpiresAt  TimestamptzString?
+  resetPasswordToken     String?
+  resetPasswordExpiresAt TimestamptzString?
+  role                   Role                      @default(Auditor)
+  companyIds             Int[]?                    // array of company IDs
+  createdAt              TimestamptzString         @default(now())
+  updatedAt              temporal.updatedAtString()
+
+  movements             Movement[]
+}
+
+// ─── Movement ──────────────────────────────────────────
+// Types: cobro (inflow), pago (outflow)
+// Statuses: previsto (forecasted), real (realized), vencido (overdue)
+model Movement {
+  id           Int                       @id @default(autoincrement())
+  concept      String
+  type         String                    // "cobro" | "pago"
+  amount       Decimal                   // precise financial amounts
+  date         TimestamptzString
+  status       String                    @default("previsto")
+  companyId    Int
+  company      Company                   @relation(fields: [companyId], references: [id])
+  counterparty String?                   // supplier or client name
+  account      String?                   // bank account reference
+  category     String?
+  createdById  Int?
+  createdBy    User?                     @relation(fields: [createdById], references: [id])
+  createdAt    TimestamptzString         @default(now())
+  updatedAt    temporal.updatedAtString()
+}

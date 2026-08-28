@@ -1,0 +1,37 @@
+{
+  "name": "finance-on_backend",
+  "version": "1.0.0",
+  "description": "Express TypeScript Backend",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npm run contract:emit && tsc && node -e \"const fs=require('fs'); fs.mkdirSync('dist/prisma', {recursive:true}); fs.copyFileSync('src/prisma/contract.json', 'dist/prisma/contract.json');\"",
+    "start": "node dist/index.js",
+    "dev": "nodemon",
+    "contract:emit": "prisma contract emit"
+  },
+  "dependencies": {
+    "@prisma/orm-postgres": "^8.0.0-rc.8",
+    "@types/nodemailer": "^8.0.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^4.19.2",
+    "google-auth-library": "^11.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^9.0.6"
+  },
+  "devDependencies": {
+    "@prisma/cli-engine": "^0.2.3",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.11.0",
+    "nodemon": "^3.1.4",
+    "prisma": "^8.0.0-rc.10",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.0",
+    "typescript": "^5.3.3"
+  }
+}
