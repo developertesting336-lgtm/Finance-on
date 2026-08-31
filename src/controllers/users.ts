@@ -28,12 +28,16 @@ const normalizeRole = (roleStr: string): Role | null => {
 const formatUserManagement = (user: any) => ({
   id: user.id,
   email: user.email,
-  fullName: user.fullName ?? user.email.split('@')[0],
+  fullName: user.fullName ?? (user.email ? user.email.split('@')[0] : ''),
+  full_name: user.fullName ?? (user.email ? user.email.split('@')[0] : ''),
   role: user.role,
   companyScope:
     user.companyIds && user.companyIds.length > 0
       ? user.companyIds.join(', ')
       : 'Todas las sociedades',
+  company_scope: user.companyIds ? [...user.companyIds] : [],
+  isEmailVerified: user.isEmailVerified,
+  createdAt: user.createdAt,
 });
 
 /**
@@ -42,7 +46,9 @@ const formatUserManagement = (user: any) => ({
  */
 export const getUsers = async (req: Request, res: Response) => {
   try {
+    // Select all required fields explicitly, then order and fetch all rows
     const users = await db.orm.public.User
+      .select('id', 'email', 'fullName', 'role', 'companyIds')
       .orderBy((u) => u.id.asc())
       .all();
 
@@ -131,6 +137,8 @@ export const updateUser = async (req: Request, res: Response) => {
       }
     }
 
+    // Merge updateData onto the in-memory snapshot — avoids a second DB round-trip
+    // and prevents a null crash if the re-fetch races a concurrent delete.
     let updatedUser: any = existingUser;
 
     if (Object.keys(updateData).length > 0) {
@@ -138,9 +146,12 @@ export const updateUser = async (req: Request, res: Response) => {
         .where({ id: userId })
         .update(updateData);
 
-      updatedUser = await db.orm.public.User
-        .where({ id: userId })
-        .first();
+      // Apply the patch to the snapshot we already have
+      updatedUser = { ...existingUser, ...updateData };
+    }
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found after update' });
     }
 
     return res.json({
