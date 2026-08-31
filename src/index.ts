@@ -2,6 +2,7 @@ import express from 'express';
 import type { Request, Response } from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,14 +34,15 @@ app.use(cors({
 
 app.use(express.json());
 
-// Request logger for debugging
-app.use((req, res, next) => {
-  console.log(`📡 [${req.method}] ${req.url} - Body:`, JSON.stringify(req.body));
-  next();
-});
+// // Request logger for debugging
+// app.use((req, res, next) => {
+//   console.log(`📡 [${req.method}] ${req.url} - Body:`, JSON.stringify(req.body));
+//   next();
+// });
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/api/test', (req: Request, res: Response) => {
   res.json({
