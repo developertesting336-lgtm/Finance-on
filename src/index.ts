@@ -52,6 +52,14 @@ app.get('/api/test', (req: Request, res: Response) => {
   });
 });
 
+app.post('/api/webhook', (req: Request, res: Response) => {
+  console.log('Webhook payload received:', req.body);
+  res.status(200).json({
+    status: 'success',
+    message: 'Webhook received successfully'
+  });
+});
+
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);

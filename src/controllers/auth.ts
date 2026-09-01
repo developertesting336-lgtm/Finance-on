@@ -10,17 +10,67 @@ import type { AuthenticatedRequest } from '../middleware/auth.js';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Format user payload for consistent API responses
+ * Format user payload for consistent API responses including company metadata.
+ * Supports both camelCase and snake_case for seamless frontend compatibility.
  */
-const formatUser = (user: any) => ({
-  id: user.id,
-  email: user.email,
-  full_name: user.fullName ?? null,
-  role: user.role,
-  company_scope: user.companyIds ? [...user.companyIds] : [],
-  isEmailVerified: user.isEmailVerified,
-  createdAt: user.createdAt,
-});
+const formatUserWithCompanies = async (user: any) => {
+  let companies: Array<{ id: number; name: string; isHolding: boolean }> = [];
+
+  const isAdmin = user.role === 'Admin';
+  const hasAllScope =
+    !user.companyIds ||
+    user.companyIds.length === 0 ||
+    isAdmin;
+
+  try {
+    if (isAdmin || hasAllScope) {
+      // Return all companies for Admin or global scope
+      const allCompanies = await db.orm.public.Company
+        .select('id', 'name', 'isHolding')
+        .orderBy((c) => c.id.asc())
+        .all();
+      companies = allCompanies.map((c) => ({
+        id: c.id,
+        name: c.name,
+        isHolding: c.isHolding,
+      }));
+    } else if (Array.isArray(user.companyIds) && user.companyIds.length > 0) {
+      // Return companies matching user's companyIds
+      const assignedCompanies = await db.orm.public.Company
+        .where((c) => c.id.in(user.companyIds))
+        .select('id', 'name', 'isHolding')
+        .orderBy((c) => c.id.asc())
+        .all();
+      companies = assignedCompanies.map((c) => ({
+        id: c.id,
+        name: c.name,
+        isHolding: c.isHolding,
+      }));
+    }
+  } catch (err) {
+    console.error('Error fetching companies for user payload:', err);
+  }
+
+  const companyScopeStr =
+    user.companyIds && user.companyIds.length > 0 && !isAdmin
+      ? user.companyIds.join(', ')
+      : 'Todas las sociedades';
+
+  const fullNameVal = user.fullName ?? (user.email ? user.email.split('@')[0] : null);
+
+  return {
+    id: user.id,
+    email: user.email,
+    fullName: fullNameVal,
+    full_name: fullNameVal,
+    role: user.role,
+    companyScope: companyScopeStr,
+    company_scope: user.companyIds ? [...user.companyIds] : [],
+    companies,
+    isEmailVerified: user.isEmailVerified,
+    createdAt: user.createdAt,
+  };
+};
 
 /**
  * 1. POST /api/auth/register
@@ -167,10 +217,12 @@ export const verifyOtp = async (req: Request, res: Response) => {
       companyIds: user.companyIds ? [...user.companyIds] : [],
     });
 
+    const userPayload = await formatUserWithCompanies({ ...user, isEmailVerified: true });
+
     return res.json({
       message: 'Email verified successfully',
       token,
-      user: formatUser({ ...user, isEmailVerified: true }),
+      user: userPayload,
     });
   } catch (error: any) {
     console.error('OTP verification error:', error);
@@ -221,7 +273,7 @@ export const resendOtp = async (req: Request, res: Response) => {
 /**
  * 4. POST /api/auth/login
  * Request: { email, password }
- * Response 200: { token: "<jwt>", user: { id, email, full_name, role, company_scope } }
+ * Response 200: { token: "<jwt>", user: { id, email, full_name, fullName, role, companyScope, company_scope, companies, ... } }
  * Errors: 401 invalid credentials; 403 email not verified.
  */
 export const login = async (req: Request, res: Response) => {
@@ -263,10 +315,12 @@ export const login = async (req: Request, res: Response) => {
       companyIds: user.companyIds ? [...user.companyIds] : [],
     });
 
+    const userPayload = await formatUserWithCompanies(user);
+
     return res.json({
       message: 'Login successful',
       token,
-      user: formatUser(user),
+      user: userPayload,
     });
   } catch (error: any) {
     console.error('Login error:', error);
@@ -277,7 +331,7 @@ export const login = async (req: Request, res: Response) => {
 /**
  * 5. POST /api/auth/google
  * Request: { id_token } or { idToken }
- * Response 200: { token: "<jwt>", user: { id, email, full_name, role, company_scope } }
+ * Response 200: { token: "<jwt>", user: { id, email, full_name, fullName, role, companyScope, companies, ... } }
  * Errors: 400 invalid token.
  */
 export const googleLogin = async (req: Request, res: Response) => {
@@ -333,10 +387,12 @@ export const googleLogin = async (req: Request, res: Response) => {
       companyIds: user.companyIds ? [...user.companyIds] : [],
     });
 
+    const userPayload = await formatUserWithCompanies({ ...user, isEmailVerified: true });
+
     return res.json({
       message: 'Google login successful',
       token,
-      user: formatUser({ ...user, isEmailVerified: true }),
+      user: userPayload,
     });
   } catch (error: any) {
     console.error('Google login error:', error);
@@ -347,7 +403,7 @@ export const googleLogin = async (req: Request, res: Response) => {
 /**
  * 6. GET /api/auth/me
  * Header: Authorization: Bearer <token>
- * Response 200: { user: { id, email, full_name, role, company_scope } }
+ * Response 200: { user: { id, email, fullName, full_name, role, companyScope, company_scope, companies, ... } }
  * Errors: 401 invalid/expired token.
  */
 export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
@@ -366,8 +422,10 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(401).json({ message: 'User not found or deleted' });
     }
 
+    const userPayload = await formatUserWithCompanies(user);
+
     return res.json({
-      user: formatUser(user),
+      user: userPayload,
     });
   } catch (error: any) {
     console.error('Profile fetch error:', error);
