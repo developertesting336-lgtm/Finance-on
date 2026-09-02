@@ -141,7 +141,7 @@ export const register = async (req: Request, res: Response) => {
       isEmailVerified: false,
       verificationCode: otp,
       verificationExpiresAt: expiresAt,
-      updatedAt: new Date(),
+      updatedAt: new Date().toISOString(),
     });
 
     await sendVerificationEmail(email, otp);
@@ -364,7 +364,7 @@ export const googleLogin = async (req: Request, res: Response) => {
         role: 'Auditor',
         companyIds: [],
         isEmailVerified: true,
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
       });
     } else {
       // Existing user: link googleId and set verified

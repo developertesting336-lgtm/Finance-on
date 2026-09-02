@@ -34,8 +34,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
       facturasCount: Array.isArray(payload?.facturas) ? payload.facturas.length : undefined,
     });
 
-    // Helper to create a clean Date object (ensures no Temporal usage)
-    const getNow = () => new Date();
+    // Helper to create clean ISO string (no Temporal dependency)
+    const getNow = () => new Date().toISOString();
     const now = getNow();
 
     // Helper to parse simple CSV string if needed

@@ -2,23 +2,23 @@
 // Contract inferred from the live database schema. Edit as needed, then run `prisma contract emit`.
 
 model Articulos {
-  articulo       String      @id(map: "articulos_pkey")
+  articulo       String            @id(map: "articulos_pkey")
   col01          String?
   col02          String?
   col03          String?
-  createdAt      Timestamptz @default(now())
+  createdAt      TimestamptzString @default(now())
   nombreArticulo String?
   tipoRegistro   String?
-  updatedAt      Timestamptz
+  updatedAt      TimestamptzString
 
   @@map("articulos")
 }
 
 model Clientes {
-  cliente        Int         @id(map: "clientes_pkey")
+  cliente        Int               @id(map: "clientes_pkey")
   cPostal        String?
   cif            String?
-  createdAt      Timestamptz @default(now())
+  createdAt      TimestamptzString @default(now())
   direccion      String?
   email          String?
   fechaAlta      String?
@@ -29,21 +29,21 @@ model Clientes {
   provincia      String?
   razonComercial String?
   telefono       String?
-  updatedAt      Timestamptz
+  updatedAt      TimestamptzString
 
   @@map("clientes")
 }
 
 model Company {
-  id           String      @id(map: "company_pkey")
-  baseCurrency String?     @map("base_currency")
-  createdAt    Timestamptz @default(now())
-  erpMapping   Json?       @map("erp_mapping")
+  id           String            @id(map: "company_pkey")
+  baseCurrency String?           @map("base_currency")
+  createdAt    TimestamptzString @default(now())
+  erpMapping   Json?             @map("erp_mapping")
   name         String
-  status       String      @default("Active")
-  taxId        String?     @map("tax_id")
+  status       String            @default("Active")
+  taxId        String?           @map("tax_id")
   timezone     String?
-  updatedAt    Timestamptz
+  updatedAt    TimestamptzString
   movements    Movement[]
 
   @@check(expression: "(status = ANY (ARRAY['Active'::text, 'Inactive'::text]))", map: "company_status_check_cf0b2206")
@@ -51,10 +51,10 @@ model Company {
 }
 
 model Facturas {
-  factura             String      @id(map: "facturas_pkey")
+  factura             String            @id(map: "facturas_pkey")
   baseImponible       String?
   cliente             String?
-  createdAt           Timestamptz @default(now())
+  createdAt           TimestamptzString @default(now())
   fecha               String?
   iva                 String?
   nFraExp             String?
@@ -66,24 +66,24 @@ model Facturas {
   retencion           String?
   tipoRegistro        String?
   total               String?
-  updatedAt           Timestamptz
+  updatedAt           TimestamptzString
 
   @@map("facturas")
 }
 
 model User {
-  id                     Int          @id(map: "user_pkey") @default(autoincrement())
-  createdAt              Timestamptz  @default(now())
-  email                  String       @unique(map: "user_email_key")
+  id                     Int                @id(map: "user_pkey") @default(autoincrement())
+  createdAt              TimestamptzString  @default(now())
+  email                  String             @unique(map: "user_email_key")
   fullName               String?
-  role                   String       @default("Auditor")
-  updatedAt              Timestamptz
+  role                   String             @default("Auditor")
+  updatedAt              TimestamptzString
   password               String?
-  googleId               String?      @unique(map: "user_googleId_key")
-  isEmailVerified        Boolean      @default(false)
+  googleId               String?            @unique(map: "user_googleId_key")
+  isEmailVerified        Boolean            @default(false)
   verificationCode       String?
-  verificationExpiresAt  Timestamptz?
-  resetPasswordExpiresAt Timestamptz?
+  verificationExpiresAt  TimestamptzString?
+  resetPasswordExpiresAt TimestamptzString?
   resetPasswordToken     String?
   companyIds             String[]?
   movements              Movement[]
@@ -93,21 +93,21 @@ model User {
 }
 
 model Movement {
-  id           Int         @id(map: "movement_pkey") @default(autoincrement())
+  id           Int               @id(map: "movement_pkey") @default(autoincrement())
   account      String?
   amount       Numeric
   category     String?
   companyId    String
   concept      String
   counterparty String?
-  createdAt    Timestamptz @default(now())
+  createdAt    TimestamptzString @default(now())
   createdById  Int?
-  date         Timestamptz
-  status       String      @default("previsto")
-  _type        String      @map("type")
-  updatedAt    Timestamptz
-  company      Company     @relation(fields: [companyId], references: [id], map: "movement_companyId_fkey")
-  createdBy    User?       @relation(fields: [createdById], references: [id], map: "movement_createdById_fkey")
+  date         TimestamptzString
+  status       String            @default("previsto")
+  _type        String            @map("type")
+  updatedAt    TimestamptzString
+  company      Company           @relation(fields: [companyId], references: [id], map: "movement_companyId_fkey")
+  createdBy    User?             @relation(fields: [createdById], references: [id], map: "movement_createdById_fkey")
 
   @@index([companyId], name: "movement_companyId_idx")
   @@index([createdById], name: "movement_createdById_idx")
@@ -126,10 +126,10 @@ model Productsandservices {
 }
 
 model Proveedores {
-  proveedor      Int         @id(map: "proveedores_pkey")
+  proveedor      Int               @id(map: "proveedores_pkey")
   cPostal        String?
   cif            String?
-  createdAt      Timestamptz @default(now())
+  createdAt      TimestamptzString @default(now())
   direccion      String?
   email          String?
   formaPago      String?
@@ -138,7 +138,7 @@ model Proveedores {
   provincia      String?
   razonComercial String?
   telefono       String?
-  updatedAt      Timestamptz
+  updatedAt      TimestamptzString
 
   @@map("proveedores")
 }
