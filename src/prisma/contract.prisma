@@ -1,63 +1,144 @@
 // use prisma-next
+// Contract inferred from the live database schema. Edit as needed, then run `prisma contract emit`.
 
-// ─── Company ───────────────────────────────────────────
+model Articulos {
+  articulo       String      @id(map: "articulos_pkey")
+  col01          String?
+  col02          String?
+  col03          String?
+  createdAt      Timestamptz @default(now())
+  nombreArticulo String?
+  tipoRegistro   String?
+  updatedAt      Timestamptz
+
+  @@map("articulos")
+}
+
+model Clientes {
+  cliente        Int         @id(map: "clientes_pkey")
+  cPostal        String?
+  cif            String?
+  createdAt      Timestamptz @default(now())
+  direccion      String?
+  email          String?
+  fechaAlta      String?
+  fechaBaja      String?
+  formaPago      String?
+  nombre         String?
+  poblacion      String?
+  provincia      String?
+  razonComercial String?
+  telefono       String?
+  updatedAt      Timestamptz
+
+  @@map("clientes")
+}
+
 model Company {
-  id        Int                       @id @default(autoincrement())
-  name      String                    @unique
-  isHolding Boolean                   @default(false)
-  createdAt TimestamptzString         @default(now())
-  updatedAt temporal.updatedAtString()
+  id           String      @id(map: "company_pkey")
+  baseCurrency String?     @map("base_currency")
+  createdAt    Timestamptz @default(now())
+  erpMapping   Json?       @map("erp_mapping")
+  name         String
+  status       String      @default("Active")
+  taxId        String?     @map("tax_id")
+  timezone     String?
+  updatedAt    Timestamptz
+  movements    Movement[]
 
-  movements Movement[]
+  @@check(expression: "(status = ANY (ARRAY['Active'::text, 'Inactive'::text]))", map: "company_status_check_cf0b2206")
+  @@map("company")
 }
 
-enum Role {
-  @@type("pg/text@1")
-  Admin           = "Admin"
-  Management      = "Management"
-  Finance         = "Finance"
-  CompanyManager  = "Company Manager"
-  Auditor         = "Auditor"
+model Facturas {
+  factura             String      @id(map: "facturas_pkey")
+  baseImponible       String?
+  cliente             String?
+  createdAt           Timestamptz @default(now())
+  fecha               String?
+  iva                 String?
+  nFraExp             String?
+  nombre              String?
+  porcentajeIva       String?
+  porcentajeRecargo   String?
+  porcentajeRetencion String?
+  recargo             String?
+  retencion           String?
+  tipoRegistro        String?
+  total               String?
+  updatedAt           Timestamptz
+
+  @@map("facturas")
 }
 
-// ─── User ──────────────────────────────────────────────
-// Roles: Admin, Management, Finance, Company Manager, Auditor
 model User {
-  id                    Int                       @id @default(autoincrement())
-  email                 String                    @unique
-  fullName              String?
-  googleId              String?                   @unique  
-  password              String?
-  isEmailVerified        Boolean                   @default(false)
+  id                     Int          @id(map: "user_pkey") @default(autoincrement())
+  createdAt              Timestamptz  @default(now())
+  email                  String       @unique(map: "user_email_key")
+  fullName               String?
+  role                   String       @default("Auditor")
+  updatedAt              Timestamptz
+  password               String?
+  googleId               String?      @unique(map: "user_googleId_key")
+  isEmailVerified        Boolean      @default(false)
   verificationCode       String?
-  verificationExpiresAt  TimestamptzString?
+  verificationExpiresAt  Timestamptz?
+  resetPasswordExpiresAt Timestamptz?
   resetPasswordToken     String?
-  resetPasswordExpiresAt TimestamptzString?
-  role                   Role                      @default(Auditor)
-  companyIds             Int[]?                    // array of company IDs
-  createdAt              TimestamptzString         @default(now())
-  updatedAt              temporal.updatedAtString()
+  companyIds             String[]?
+  movements              Movement[]
 
-  movements             Movement[]
+  @@check(expression: "(role = ANY (ARRAY['Admin'::text, 'Management'::text, 'Finance'::text, 'Company Manager'::text, 'Auditor'::text]))", map: "user_role_check_136a03ee")
+  @@map("user")
 }
 
-// ─── Movement ──────────────────────────────────────────
-// Types: cobro (inflow), pago (outflow)
-// Statuses: previsto (forecasted), real (realized), vencido (overdue)
 model Movement {
-  id           Int                       @id @default(autoincrement())
-  concept      String
-  type         String                    // "cobro" | "pago"
-  amount       Decimal                   // precise financial amounts
-  date         TimestamptzString
-  status       String                    @default("previsto")
-  companyId    Int
-  company      Company                   @relation(fields: [companyId], references: [id])
-  counterparty String?                   // supplier or client name
-  account      String?                   // bank account reference
+  id           Int         @id(map: "movement_pkey") @default(autoincrement())
+  account      String?
+  amount       Numeric
   category     String?
+  companyId    String
+  concept      String
+  counterparty String?
+  createdAt    Timestamptz @default(now())
   createdById  Int?
-  createdBy    User?                     @relation(fields: [createdById], references: [id])
-  createdAt    TimestamptzString         @default(now())
-  updatedAt    temporal.updatedAtString()
+  date         Timestamptz
+  status       String      @default("previsto")
+  _type        String      @map("type")
+  updatedAt    Timestamptz
+  company      Company     @relation(fields: [companyId], references: [id], map: "movement_companyId_fkey")
+  createdBy    User?       @relation(fields: [createdById], references: [id], map: "movement_createdById_fkey")
+
+  @@index([companyId], name: "movement_companyId_idx")
+  @@index([createdById], name: "movement_createdById_idx")
+  @@map("movement")
+}
+
+model Productsandservices {
+  productcode     VarChar(50)     @id(map: "productsandservices_pkey")
+  description     VarChar(255)?
+  inactive        Boolean?        @default(false)
+  salesprice      Numeric(15, 2)? @default(0)
+  quantityinstock Numeric(15, 2)? @default(0)
+  freestock       Numeric(15, 2)? @default(0)
+
+  @@map("productsandservices")
+}
+
+model Proveedores {
+  proveedor      Int         @id(map: "proveedores_pkey")
+  cPostal        String?
+  cif            String?
+  createdAt      Timestamptz @default(now())
+  direccion      String?
+  email          String?
+  formaPago      String?
+  nombre         String?
+  poblacion      String?
+  provincia      String?
+  razonComercial String?
+  telefono       String?
+  updatedAt      Timestamptz
+
+  @@map("proveedores")
 }

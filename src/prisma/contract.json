@@ -4,12 +4,32 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
+    "articulos": {
+      "model": "Articulos",
+      "namespace": "public"
+    },
+    "clientes": {
+      "model": "Clientes",
+      "namespace": "public"
+    },
     "company": {
       "model": "Company",
       "namespace": "public"
     },
+    "facturas": {
+      "model": "Facturas",
+      "namespace": "public"
+    },
     "movement": {
       "model": "Movement",
+      "namespace": "public"
+    },
+    "productsandservices": {
+      "model": "Productsandservices",
+      "namespace": "public"
+    },
+    "proveedores": {
+      "model": "Proveedores",
       "namespace": "public"
     },
     "user": {
@@ -20,54 +40,286 @@
   "domain": {
     "namespaces": {
       "public": {
-        "enum": {
-          "Role": {
-            "codecId": "pg/text@1",
-            "members": [
-              {
-                "name": "Admin",
-                "value": "Admin"
-              },
-              {
-                "name": "Management",
-                "value": "Management"
-              },
-              {
-                "name": "Finance",
-                "value": "Finance"
-              },
-              {
-                "name": "CompanyManager",
-                "value": "Company Manager"
-              },
-              {
-                "name": "Auditor",
-                "value": "Auditor"
-              }
-            ]
-          }
-        },
         "models": {
-          "Company": {
+          "Articulos": {
             "fields": {
-              "createdAt": {
+              "articulo": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
-              "id": {
+              "col01": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "col02": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "col03": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "nombreArticulo": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tipoRegistro": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "articulo": {
+                  "column": "articulo"
+                },
+                "col01": {
+                  "column": "col01"
+                },
+                "col02": {
+                  "column": "col02"
+                },
+                "col03": {
+                  "column": "col03"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "nombreArticulo": {
+                  "column": "nombreArticulo"
+                },
+                "tipoRegistro": {
+                  "column": "tipoRegistro"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "articulos"
+            }
+          },
+          "Clientes": {
+            "fields": {
+              "cPostal": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "cif": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "cliente": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
-              "isHolding": {
+              "createdAt": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/bool@1",
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "direccion": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "email": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "fechaAlta": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "fechaBaja": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "formaPago": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nombre": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "poblacion": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "provincia": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "razonComercial": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "telefono": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "cPostal": {
+                  "column": "cPostal"
+                },
+                "cif": {
+                  "column": "cif"
+                },
+                "cliente": {
+                  "column": "cliente"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "direccion": {
+                  "column": "direccion"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "fechaAlta": {
+                  "column": "fechaAlta"
+                },
+                "fechaBaja": {
+                  "column": "fechaBaja"
+                },
+                "formaPago": {
+                  "column": "formaPago"
+                },
+                "nombre": {
+                  "column": "nombre"
+                },
+                "poblacion": {
+                  "column": "poblacion"
+                },
+                "provincia": {
+                  "column": "provincia"
+                },
+                "razonComercial": {
+                  "column": "razonComercial"
+                },
+                "telefono": {
+                  "column": "telefono"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "clientes"
+            }
+          },
+          "Company": {
+            "fields": {
+              "baseCurrency": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "erpMapping": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -78,10 +330,31 @@
                   "kind": "scalar"
                 }
               },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "timezone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               }
@@ -105,17 +378,29 @@
             },
             "storage": {
               "fields": {
+                "baseCurrency": {
+                  "column": "base_currency"
+                },
                 "createdAt": {
                   "column": "createdAt"
+                },
+                "erpMapping": {
+                  "column": "erp_mapping"
                 },
                 "id": {
                   "column": "id"
                 },
-                "isHolding": {
-                  "column": "isHolding"
-                },
                 "name": {
                   "column": "name"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "taxId": {
+                  "column": "tax_id"
+                },
+                "timezone": {
+                  "column": "timezone"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -125,8 +410,186 @@
               "table": "company"
             }
           },
+          "Facturas": {
+            "fields": {
+              "baseImponible": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "cliente": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "factura": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "fecha": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "iva": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nFraExp": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nombre": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "porcentajeIva": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "porcentajeRecargo": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "porcentajeRetencion": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "recargo": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "retencion": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tipoRegistro": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "total": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "baseImponible": {
+                  "column": "baseImponible"
+                },
+                "cliente": {
+                  "column": "cliente"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "factura": {
+                  "column": "factura"
+                },
+                "fecha": {
+                  "column": "fecha"
+                },
+                "iva": {
+                  "column": "iva"
+                },
+                "nFraExp": {
+                  "column": "nFraExp"
+                },
+                "nombre": {
+                  "column": "nombre"
+                },
+                "porcentajeIva": {
+                  "column": "porcentajeIva"
+                },
+                "porcentajeRecargo": {
+                  "column": "porcentajeRecargo"
+                },
+                "porcentajeRetencion": {
+                  "column": "porcentajeRetencion"
+                },
+                "recargo": {
+                  "column": "recargo"
+                },
+                "retencion": {
+                  "column": "retencion"
+                },
+                "tipoRegistro": {
+                  "column": "tipoRegistro"
+                },
+                "total": {
+                  "column": "total"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "facturas"
+            }
+          },
           "Movement": {
             "fields": {
+              "_type": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "account": {
                 "nullable": true,
                 "type": {
@@ -151,7 +614,7 @@
               "companyId": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/int4@1",
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -172,7 +635,7 @@
               "createdAt": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
@@ -186,7 +649,7 @@
               "date": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
@@ -204,17 +667,10 @@
                   "kind": "scalar"
                 }
               },
-              "type": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               }
@@ -253,6 +709,9 @@
             },
             "storage": {
               "fields": {
+                "_type": {
+                  "column": "type"
+                },
                 "account": {
                   "column": "account"
                 },
@@ -286,9 +745,6 @@
                 "status": {
                   "column": "status"
                 },
-                "type": {
-                  "column": "type"
-                },
                 "updatedAt": {
                   "column": "updatedAt"
                 }
@@ -297,20 +753,250 @@
               "table": "movement"
             }
           },
-          "User": {
+          "Productsandservices": {
             "fields": {
-              "companyIds": {
-                "many": true,
+              "description": {
                 "nullable": true,
                 "type": {
-                  "codecId": "pg/int4@1",
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 255
+                  }
+                }
+              },
+              "freestock": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 15,
+                    "scale": 2
+                  }
+                }
+              },
+              "inactive": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "productcode": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 50
+                  }
+                }
+              },
+              "quantityinstock": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 15,
+                    "scale": 2
+                  }
+                }
+              },
+              "salesprice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 15,
+                    "scale": 2
+                  }
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "description": {
+                  "column": "description"
+                },
+                "freestock": {
+                  "column": "freestock"
+                },
+                "inactive": {
+                  "column": "inactive"
+                },
+                "productcode": {
+                  "column": "productcode"
+                },
+                "quantityinstock": {
+                  "column": "quantityinstock"
+                },
+                "salesprice": {
+                  "column": "salesprice"
+                }
+              },
+              "namespaceId": "public",
+              "table": "productsandservices"
+            }
+          },
+          "Proveedores": {
+            "fields": {
+              "cPostal": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "cif": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
               "createdAt": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "direccion": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "email": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "formaPago": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nombre": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "poblacion": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "proveedor": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "provincia": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "razonComercial": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "telefono": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "cPostal": {
+                  "column": "cPostal"
+                },
+                "cif": {
+                  "column": "cif"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "direccion": {
+                  "column": "direccion"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "formaPago": {
+                  "column": "formaPago"
+                },
+                "nombre": {
+                  "column": "nombre"
+                },
+                "poblacion": {
+                  "column": "poblacion"
+                },
+                "proveedor": {
+                  "column": "proveedor"
+                },
+                "provincia": {
+                  "column": "provincia"
+                },
+                "razonComercial": {
+                  "column": "razonComercial"
+                },
+                "telefono": {
+                  "column": "telefono"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "proveedores"
+            }
+          },
+          "User": {
+            "fields": {
+              "companyIds": {
+                "many": true,
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
@@ -359,7 +1045,7 @@
               "resetPasswordExpiresAt": {
                 "nullable": true,
                 "type": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
@@ -375,18 +1061,12 @@
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
-                },
-                "valueSet": {
-                  "entityKind": "enum",
-                  "entityName": "Role",
-                  "namespaceId": "public",
-                  "plane": "domain"
                 }
               },
               "updatedAt": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
@@ -400,7 +1080,7 @@
               "verificationExpiresAt": {
                 "nullable": true,
                 "type": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               }
@@ -480,10 +1160,30 @@
       "public": {
         "entries": {
           "table": {
-            "company": {
+            "articulos": {
               "columns": {
+                "articulo": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "col01": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "col02": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "col03": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "createdAt": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "default": {
                     "expression": "now()",
                     "kind": "function"
@@ -491,22 +1191,154 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
-                "id": {
+                "nombreArticulo": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "tipoRegistro": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "articulo"
+                ],
+                "name": "articulos_pkey"
+              },
+              "uniques": []
+            },
+            "clientes": {
+              "columns": {
+                "cPostal": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "cif": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "cliente": {
                   "codecId": "pg/int4@1",
-                  "default": {
-                    "expression": "autoincrement()",
-                    "kind": "function"
-                  },
                   "nativeType": "int4",
                   "nullable": false
                 },
-                "isHolding": {
-                  "codecId": "pg/bool@1",
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
                   "default": {
-                    "kind": "literal",
-                    "value": false
+                    "expression": "now()",
+                    "kind": "function"
                   },
-                  "nativeType": "bool",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "direccion": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "email": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "fechaAlta": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "fechaBaja": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "formaPago": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "nombre": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "poblacion": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "provincia": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "razonComercial": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "telefono": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "cliente"
+                ],
+                "name": "clientes_pkey"
+              },
+              "uniques": []
+            },
+            "company": {
+              "checks": [
+                {
+                  "expression": "(status = ANY (ARRAY['Active'::text, 'Inactive'::text]))",
+                  "name": "company_status_check_cf0b2206"
+                }
+              ],
+              "columns": {
+                "base_currency": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "erp_mapping": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
                   "nullable": false
                 },
                 "name": {
@@ -514,8 +1346,27 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "Active"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tax_id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "timezone": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "updatedAt": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
                   "nullable": false
                 }
@@ -525,15 +1376,107 @@
               "primaryKey": {
                 "columns": [
                   "id"
-                ]
+                ],
+                "name": "company_pkey"
               },
-              "uniques": [
-                {
-                  "columns": [
-                    "name"
-                  ]
+              "uniques": []
+            },
+            "facturas": {
+              "columns": {
+                "baseImponible": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "cliente": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "factura": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "fecha": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "iva": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "nFraExp": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "nombre": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "porcentajeIva": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "porcentajeRecargo": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "porcentajeRetencion": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "recargo": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "retencion": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "tipoRegistro": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "total": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
                 }
-              ]
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "factura"
+                ],
+                "name": "facturas_pkey"
+              },
+              "uniques": []
             },
             "movement": {
               "columns": {
@@ -553,8 +1496,8 @@
                   "nullable": true
                 },
                 "companyId": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
                   "nullable": false
                 },
                 "concept": {
@@ -568,7 +1511,7 @@
                   "nullable": true
                 },
                 "createdAt": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "default": {
                     "expression": "now()",
                     "kind": "function"
@@ -582,7 +1525,7 @@
                   "nullable": true
                 },
                 "date": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
@@ -610,13 +1553,14 @@
                   "nullable": false
                 },
                 "updatedAt": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
                   "nullable": false
                 }
               },
               "foreignKeys": [
                 {
+                  "name": "movement_companyId_fkey",
                   "source": {
                     "columns": [
                       "companyId"
@@ -633,6 +1577,7 @@
                   }
                 },
                 {
+                  "name": "movement_createdById_fkey",
                   "source": {
                     "columns": [
                       "createdById"
@@ -670,7 +1615,167 @@
               "primaryKey": {
                 "columns": [
                   "id"
-                ]
+                ],
+                "name": "movement_pkey"
+              },
+              "uniques": []
+            },
+            "productsandservices": {
+              "columns": {
+                "description": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 255
+                  }
+                },
+                "freestock": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "numeric",
+                  "nullable": true,
+                  "typeParams": {
+                    "precision": 15,
+                    "scale": 2
+                  }
+                },
+                "inactive": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": true
+                },
+                "productcode": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 50
+                  }
+                },
+                "quantityinstock": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "numeric",
+                  "nullable": true,
+                  "typeParams": {
+                    "precision": 15,
+                    "scale": 2
+                  }
+                },
+                "salesprice": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "numeric",
+                  "nullable": true,
+                  "typeParams": {
+                    "precision": 15,
+                    "scale": 2
+                  }
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "productcode"
+                ],
+                "name": "productsandservices_pkey"
+              },
+              "uniques": []
+            },
+            "proveedores": {
+              "columns": {
+                "cPostal": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "cif": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "direccion": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "email": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "formaPago": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "nombre": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "poblacion": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "proveedor": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "provincia": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "razonComercial": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "telefono": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "proveedor"
+                ],
+                "name": "proveedores_pkey"
               },
               "uniques": []
             },
@@ -682,20 +1787,19 @@
                   "prefix": "user_companyIds_elem_not_null"
                 },
                 {
-                  "expression": "\"role\" IN ('Admin', 'Management', 'Finance', 'Company Manager', 'Auditor')",
-                  "name": "user_role_check_136a03ee",
-                  "prefix": "user_role_check"
+                  "expression": "(role = ANY (ARRAY['Admin'::text, 'Management'::text, 'Finance'::text, 'Company Manager'::text, 'Auditor'::text]))",
+                  "name": "user_role_check_136a03ee"
                 }
               ],
               "columns": {
                 "companyIds": {
-                  "codecId": "pg/int4@1",
+                  "codecId": "pg/text@1",
                   "many": true,
-                  "nativeType": "int4",
+                  "nativeType": "text",
                   "nullable": true
                 },
                 "createdAt": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "default": {
                     "expression": "now()",
                     "kind": "function"
@@ -742,7 +1846,7 @@
                   "nullable": true
                 },
                 "resetPasswordExpiresAt": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
                   "nullable": true
                 },
@@ -758,16 +1862,10 @@
                     "value": "Auditor"
                   },
                   "nativeType": "text",
-                  "nullable": false,
-                  "valueSet": {
-                    "entityKind": "valueSet",
-                    "entityName": "Role",
-                    "namespaceId": "public",
-                    "plane": "storage"
-                  }
+                  "nullable": false
                 },
                 "updatedAt": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
@@ -777,7 +1875,7 @@
                   "nullable": true
                 },
                 "verificationExpiresAt": {
-                  "codecId": "pg/timestamptz-string@1",
+                  "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
                   "nullable": true
                 }
@@ -787,31 +1885,22 @@
               "primaryKey": {
                 "columns": [
                   "id"
-                ]
+                ],
+                "name": "user_pkey"
               },
               "uniques": [
                 {
                   "columns": [
                     "email"
-                  ]
+                  ],
+                  "name": "user_email_key"
                 },
                 {
                   "columns": [
                     "googleId"
-                  ]
+                  ],
+                  "name": "user_googleId_key"
                 }
-              ]
-            }
-          },
-          "valueSet": {
-            "Role": {
-              "kind": "valueSet",
-              "values": [
-                "Admin",
-                "Management",
-                "Finance",
-                "Company Manager",
-                "Auditor"
               ]
             }
           }
@@ -820,59 +1909,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "43199e8a15edd3ac5e43d360c44fc510f467199185e72090819a065e7857889e"
-  },
-  "execution": {
-    "executionHash": "f4cab1cc8a9ed62c75bfaefb21f1e8fc2b6e15a775b0c11a94c6d50305277703",
-    "mutations": {
-      "defaults": [
-        {
-          "onCreate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "onUpdate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "ref": {
-            "column": "updatedAt",
-            "namespace": "public",
-            "table": "company"
-          }
-        },
-        {
-          "onCreate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "onUpdate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "ref": {
-            "column": "updatedAt",
-            "namespace": "public",
-            "table": "movement"
-          }
-        },
-        {
-          "onCreate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "onUpdate": {
-            "id": "timestampNow",
-            "kind": "generator"
-          },
-          "ref": {
-            "column": "updatedAt",
-            "namespace": "public",
-            "table": "user"
-          }
-        }
-      ]
-    }
+    "storageHash": "71f0f86ec01513051e6d4170b342168487a5640fcebde7c787497350d244cf96"
   },
   "capabilities": {
     "postgres": {
