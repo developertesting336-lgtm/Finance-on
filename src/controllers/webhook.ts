@@ -34,7 +34,9 @@ export const handleWebhook = async (req: Request, res: Response) => {
       facturasCount: Array.isArray(payload?.facturas) ? payload.facturas.length : undefined,
     });
 
-    const now = new Date();
+    // Helper to create a clean Date object (ensures no Temporal usage)
+    const getNow = () => new Date();
+    const now = getNow();
 
     // Helper to parse simple CSV string if needed
     const parseCsv = (csvData: string) => {
@@ -98,8 +100,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
                 fechaAlta: row[10] || null,
                 fechaBaja: row[11] || null,
                 formaPago: row[12] || null,
-                createdAt: now,
-                updatedAt: now,
+                createdAt: getNow(),
+                updatedAt: getNow(),
               },
               update: {
                 nombre: row[1] || null,
@@ -114,7 +116,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
                 fechaAlta: row[10] || null,
                 fechaBaja: row[11] || null,
                 formaPago: row[12] || null,
-                updatedAt: now,
+                updatedAt: getNow(),
               }
             });
             summary.savedCount++;
@@ -143,8 +145,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
                 col02: row[3] || null,
                 col03: row[4] || null,
                 tipoRegistro: row[5] || null,
-                createdAt: now,
-                updatedAt: now,
+                createdAt: getNow(),
+                updatedAt: getNow(),
               },
               update: {
                 nombreArticulo: row[1] || null,
@@ -152,7 +154,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
                 col02: row[3] || null,
                 col03: row[4] || null,
                 tipoRegistro: row[5] || null,
-                updatedAt: now,
+                updatedAt: getNow(),
               }
             });
             summary.savedCount++;
@@ -193,8 +195,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
                 telefono: row[8] || null,
                 email: row[9] || null,
                 formaPago: row[10] || null,
-                createdAt: now,
-                updatedAt: now,
+                createdAt: getNow(),
+                updatedAt: getNow(),
               },
               update: {
                 nombre: row[1] || null,
@@ -207,7 +209,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
                 telefono: row[8] || null,
                 email: row[9] || null,
                 formaPago: row[10] || null,
-                updatedAt: now,
+                updatedAt: getNow(),
               }
             });
             summary.savedCount++;
@@ -244,8 +246,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
                 retencion: row[11] || null,
                 total: row[12] || null,
                 tipoRegistro: row[13] || null,
-                createdAt: now,
-                updatedAt: now,
+                createdAt: getNow(),
+                updatedAt: getNow(),
               },
               update: {
                 nFraExp: row[1] || null,
@@ -261,7 +263,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
                 retencion: row[11] || null,
                 total: row[12] || null,
                 tipoRegistro: row[13] || null,
-                updatedAt: now,
+                updatedAt: getNow(),
               }
             });
             summary.savedCount++;
@@ -300,8 +302,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
         try {
           const { cliente, createdAt, updatedAt, ...rest } = item;
           await db.orm.public.Clientes.upsert({
-            create: { ...rest, cliente: clienteNum, createdAt: now, updatedAt: now },
-            update: { ...rest, updatedAt: now },
+            create: { ...rest, cliente: clienteNum, createdAt: getNow(), updatedAt: getNow() },
+            update: { ...rest, updatedAt: getNow() },
           });
           summary.savedCount++;
           console.log(`✅ [Clientes JSON] Saved cliente: ${clienteNum}`);
@@ -328,8 +330,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
         try {
           const { articulo, createdAt, updatedAt, ...rest } = item;
           await db.orm.public.Articulos.upsert({
-            create: { ...rest, articulo: articuloStr, createdAt: now, updatedAt: now },
-            update: { ...rest, updatedAt: now },
+            create: { ...rest, articulo: articuloStr, createdAt: getNow(), updatedAt: getNow() },
+            update: { ...rest, updatedAt: getNow() },
           });
           summary.savedCount++;
           console.log(`✅ [Articulos JSON] Saved articulo: ${articuloStr}`);
@@ -356,8 +358,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
         try {
           const { proveedor, createdAt, updatedAt, ...rest } = item;
           await db.orm.public.Proveedores.upsert({
-            create: { ...rest, proveedor: proveedorNum, createdAt: now, updatedAt: now },
-            update: { ...rest, updatedAt: now },
+            create: { ...rest, proveedor: proveedorNum, createdAt: getNow(), updatedAt: getNow() },
+            update: { ...rest, updatedAt: getNow() },
           });
           summary.savedCount++;
           console.log(`✅ [Proveedores JSON] Saved proveedor: ${proveedorNum}`);
@@ -384,8 +386,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
         try {
           const { factura, createdAt, updatedAt, ...rest } = item;
           await db.orm.public.Facturas.upsert({
-            create: { ...rest, factura: facturaStr, createdAt: now, updatedAt: now },
-            update: { ...rest, updatedAt: now },
+            create: { ...rest, factura: facturaStr, createdAt: getNow(), updatedAt: getNow() },
+            update: { ...rest, updatedAt: getNow() },
           });
           summary.savedCount++;
           console.log(`✅ [Facturas JSON] Saved factura: ${facturaStr}`);
