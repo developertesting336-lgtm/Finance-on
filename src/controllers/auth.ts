@@ -14,7 +14,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * Supports both camelCase and snake_case for seamless frontend compatibility.
  */
 const formatUserWithCompanies = async (user: any) => {
-  let companies: Array<{ id: number; name: string; isHolding: boolean }> = [];
+  let companies: Array<{ id: string; name: string }> = [];
 
   const isAdmin = user.role === 'Admin';
   const hasAllScope =
@@ -26,25 +26,23 @@ const formatUserWithCompanies = async (user: any) => {
     if (isAdmin || hasAllScope) {
       // Return all companies for Admin or global scope
       const allCompanies = await db.orm.public.Company
-        .select('id', 'name', 'isHolding')
+        .select('id', 'name')
         .orderBy((c) => c.id.asc())
         .all();
       companies = allCompanies.map((c) => ({
         id: c.id,
         name: c.name,
-        isHolding: c.isHolding,
       }));
     } else if (Array.isArray(user.companyIds) && user.companyIds.length > 0) {
       // Return companies matching user's companyIds
       const assignedCompanies = await db.orm.public.Company
         .where((c) => c.id.in(user.companyIds))
-        .select('id', 'name', 'isHolding')
+        .select('id', 'name')
         .orderBy((c) => c.id.asc())
         .all();
       companies = assignedCompanies.map((c) => ({
         id: c.id,
         name: c.name,
-        isHolding: c.isHolding,
       }));
     }
   } catch (err) {
@@ -143,6 +141,7 @@ export const register = async (req: Request, res: Response) => {
       isEmailVerified: false,
       verificationCode: otp,
       verificationExpiresAt: expiresAt,
+      updatedAt: new Date(),
     });
 
     await sendVerificationEmail(email, otp);
@@ -365,6 +364,7 @@ export const googleLogin = async (req: Request, res: Response) => {
         role: 'Auditor',
         companyIds: [],
         isEmailVerified: true,
+        updatedAt: new Date(),
       });
     } else {
       // Existing user: link googleId and set verified

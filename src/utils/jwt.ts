@@ -8,7 +8,7 @@ export interface TokenPayload {
   userId: number;
   email: string;
   role: Role;
-  companyIds: readonly number[] | number[];
+  companyIds: readonly string[] | string[];
 }
 
 /**
