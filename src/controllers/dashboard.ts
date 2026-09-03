@@ -73,7 +73,12 @@ const resolveCompanyScope = async (
   targetCompanyId: string | null;
   scopedCompanyIds: string[];
 } | null> => {
-  const isHolding = !companyNameParam || companyNameParam === 'Consolidado Holding';
+  const rawCompanyId = req.query.companyId ?? req.query.company_id;
+  const companyIdParam = typeof rawCompanyId === 'string' ? rawCompanyId.trim() : '';
+
+  const isHolding =
+    (!companyNameParam && !companyIdParam) ||
+    companyNameParam === 'Consolidado Holding';
   const isAdmin = req.user?.role === 'Admin';
 
   // 1. Check Consolidated Access
@@ -84,8 +89,8 @@ const resolveCompanyScope = async (
     return null;
   }
 
-  let targetCompanyName = isHolding ? 'Consolidado Holding' : companyNameParam;
-  let targetCompanyId: string | null = null;
+  let targetCompanyName = isHolding ? 'Consolidado Holding' : (companyNameParam || companyIdParam || 'Empresa');
+  let targetCompanyId: string | null = companyIdParam || null;
   let scopedCompanyIds: string[] = [];
 
   if (isHolding) {
@@ -105,9 +110,11 @@ const resolveCompanyScope = async (
         .where((c) => c.id.in(allowedCompanyIds))
         .all();
 
-      const matchingCompany = userCompanies.find(
-        (c) => c.name.trim().toLowerCase() === companyNameParam.toLowerCase()
-      );
+      const matchingCompany = userCompanies.find((c) => {
+        if (companyIdParam && c.id.trim() === companyIdParam) return true;
+        if (companyNameParam && c.name.trim().toLowerCase() === companyNameParam.toLowerCase()) return true;
+        return false;
+      });
 
       if (!matchingCompany) {
         res.status(403).json({
@@ -121,9 +128,11 @@ const resolveCompanyScope = async (
       scopedCompanyIds = [matchingCompany.id];
     } else {
       const allCompanies = await db.orm.public.Company.all();
-      const matchingCompany = allCompanies.find(
-        (c) => c.name.trim().toLowerCase() === companyNameParam.toLowerCase()
-      );
+      const matchingCompany = allCompanies.find((c) => {
+        if (companyIdParam && c.id.trim() === companyIdParam) return true;
+        if (companyNameParam && c.name.trim().toLowerCase() === companyNameParam.toLowerCase()) return true;
+        return false;
+      });
 
       if (matchingCompany) {
         targetCompanyName = matchingCompany.name;
@@ -131,7 +140,7 @@ const resolveCompanyScope = async (
         scopedCompanyIds = [matchingCompany.id];
       } else {
         res.status(404).json({
-          message: `Company '${companyNameParam}' not found.`,
+          message: `Company '${companyIdParam || companyNameParam}' not found.`,
         });
         return null;
       }
@@ -556,16 +565,43 @@ export const getDashboardUpcoming = async (req: AuthenticatedRequest, res: Respo
  */
 export const getDashboardPosition = async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const rawCompanyName = req.query.companyName;
+    const companyNameParam = typeof rawCompanyName === 'string' ? rawCompanyName.trim() : '';
+    const rawCompanyId = req.query.companyId ?? req.query.company_id;
+    const companyIdParam = typeof rawCompanyId === 'string' ? rawCompanyId.trim() : '';
+
+    const isHolding =
+      (!companyNameParam && !companyIdParam) ||
+      companyNameParam === 'Consolidado Holding';
+
     const isAdmin = req.user?.role === 'Admin';
     const userCompanyIds = (req.user?.companyIds as string[]) || [];
 
     let targetCompanies: Array<{ id: string; name: string }> = [];
 
     if (isAdmin) {
-      const companies = await db.orm.public.Company
-        .orderBy((c) => c.name.asc())
-        .all();
-      targetCompanies = companies.map((c) => ({ id: c.id, name: c.name }));
+      if (isHolding) {
+        // Holding / no filter: fetch all companies
+        const companies = await db.orm.public.Company
+          .orderBy((c) => c.name.asc())
+          .all();
+        targetCompanies = companies.map((c) => ({ id: c.id, name: c.name }));
+      } else {
+        // Specific company selected: filter by companyId or companyName
+        const companies = await db.orm.public.Company.all();
+        const matching = companies.find((c) => {
+          if (companyIdParam && c.id.trim() === companyIdParam) return true;
+          if (companyNameParam && c.name.trim().toLowerCase() === companyNameParam.toLowerCase()) return true;
+          return false;
+        });
+        if (matching) {
+          targetCompanies = [{ id: matching.id, name: matching.name }];
+        } else {
+          return res.status(404).json({
+            message: `Company '${companyIdParam || companyNameParam}' not found.`,
+          });
+        }
+      }
     } else {
       if (userCompanyIds.length === 0) {
         return res.status(200).json({ positions: [] });
@@ -575,7 +611,22 @@ export const getDashboardPosition = async (req: AuthenticatedRequest, res: Respo
         .where((c) => c.id.in(userCompanyIds))
         .orderBy((c) => c.name.asc())
         .all();
-      targetCompanies = companies.map((c) => ({ id: c.id, name: c.name }));
+
+      if (isHolding) {
+        targetCompanies = companies.map((c) => ({ id: c.id, name: c.name }));
+      } else {
+        const matching = companies.find((c) => {
+          if (companyIdParam && c.id.trim() === companyIdParam) return true;
+          if (companyNameParam && c.name.trim().toLowerCase() === companyNameParam.toLowerCase()) return true;
+          return false;
+        });
+        if (!matching) {
+          return res.status(403).json({
+            message: 'Access denied: You do not have permission to view this company.',
+          });
+        }
+        targetCompanies = [{ id: matching.id, name: matching.name }];
+      }
     }
 
     if (targetCompanies.length === 0) {
