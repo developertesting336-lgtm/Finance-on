@@ -99,7 +99,7 @@ export const register = async (req: Request, res: Response) => {
       .first();
 
     const otp = generateOtp();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 minutes
+    const expiresAt = Temporal.Now.instant().add({ minutes: 10 }); // 10 minutes
 
     if (existingUser) {
       if (existingUser.isEmailVerified) {
@@ -141,7 +141,7 @@ export const register = async (req: Request, res: Response) => {
       isEmailVerified: false,
       verificationCode: otp,
       verificationExpiresAt: expiresAt,
-      updatedAt: new Date().toISOString(),
+      updatedAt: Temporal.Now.instant(),
     });
 
     await sendVerificationEmail(email, otp);
@@ -195,7 +195,10 @@ export const verifyOtp = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
 
-    if (user.verificationExpiresAt && new Date(user.verificationExpiresAt) < new Date()) {
+    if (
+      user.verificationExpiresAt &&
+      Temporal.Instant.compare(user.verificationExpiresAt, Temporal.Now.instant()) < 0
+    ) {
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
 
@@ -251,7 +254,7 @@ export const resendOtp = async (req: Request, res: Response) => {
     }
 
     const otp = generateOtp();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const expiresAt = Temporal.Now.instant().add({ minutes: 10 });
 
     await db.orm.public.User
       .where({ id: user.id })
@@ -364,7 +367,7 @@ export const googleLogin = async (req: Request, res: Response) => {
         role: 'Auditor',
         companyIds: [],
         isEmailVerified: true,
-        updatedAt: new Date().toISOString(),
+        updatedAt: Temporal.Now.instant(),
       });
     } else {
       // Existing user: link googleId and set verified
@@ -457,7 +460,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     // Generate secure random reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetExpiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString(); // 30 minutes
+    const resetExpiresAt = Temporal.Now.instant().add({ minutes: 30 }); // 30 minutes
 
     await db.orm.public.User
       .where({ id: user.id })
@@ -506,7 +509,10 @@ export const resetPassword = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid or expired reset token' });
     }
 
-    if (!user.resetPasswordExpiresAt || new Date(user.resetPasswordExpiresAt) < new Date()) {
+    if (
+      user.resetPasswordExpiresAt &&
+      Temporal.Instant.compare(user.resetPasswordExpiresAt, Temporal.Now.instant()) < 0
+    ) {
       return res.status(400).json({ message: 'Invalid or expired reset token' });
     }
 

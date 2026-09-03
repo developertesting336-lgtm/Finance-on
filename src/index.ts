@@ -1,10 +1,13 @@
 import express from 'express';
 import type { Request, Response } from 'express';
 import cors from 'cors';
+import 'temporal-polyfill/full/global';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 
 import webhookRoutes from './routes/webhook.js';
+import companyRoutes from './routes/companies.js';
+import dashboardRoutes from './routes/dashboard.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -44,6 +47,8 @@ app.use(express.json({ limit: '50mb' }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/companies', companyRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/webhook', webhookRoutes);
 
 app.get('/api/test', (req: Request, res: Response) => {

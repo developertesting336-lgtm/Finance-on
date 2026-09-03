@@ -12,7 +12,8 @@
     "rootDir": "./src",
     "resolveJsonModule": true,
     "types": [
-      "node"
+      "node",
+      "temporal-polyfill/types/global"
     ]
   },
   "include": ["src/**/*"]
