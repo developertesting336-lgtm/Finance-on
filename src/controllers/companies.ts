@@ -7,7 +7,7 @@ import type { AuthenticatedRequest } from '../middleware/auth.js';
  */
 const generateNextCompanyId = async (): Promise<string> => {
   const companies = await db.orm.public.Company.select('id').all();
-  
+
   let maxNum = 0;
   for (const c of companies) {
     // If the ID is numeric (e.g. "0001", "0007", "42")
@@ -117,19 +117,24 @@ export const getCompanies = async (req: AuthenticatedRequest, res: Response) => 
     const isAdmin = user?.role === 'Admin';
     const userCompanyIds = user?.companyIds;
 
-    let companies;
+    let companies: any[] = [];
 
-    if (isAdmin || !userCompanyIds || userCompanyIds.length === 0) {
-      // Admin or global scope: fetch all companies
+    if (isAdmin) {
+      // Admin: fetch all companies
       companies = await db.orm.public.Company
         .orderBy((c) => c.name.asc())
         .all();
     } else {
-      // Filter by authorized company IDs for scoped users
-      companies = await db.orm.public.Company
-        .where((c) => c.id.in(userCompanyIds as string[]))
-        .orderBy((c) => c.name.asc())
-        .all();
+      // Non-admin: strictly filter by assigned companyIds.
+      // If none assigned, return empty array (prevent leaking all companies).
+      if (!userCompanyIds || userCompanyIds.length === 0) {
+        companies = [];
+      } else {
+        companies = await db.orm.public.Company
+          .where((c) => c.id.in(userCompanyIds as string[]))
+          .orderBy((c) => c.name.asc())
+          .all();
+      }
     }
 
     return res.json({
