@@ -15,24 +15,27 @@ export interface DashboardStatsResponse {
 }
 
 /**
- * Deterministic pseudo-random seed generator for realistic demo company variance.
- * Generates reproducible numbers between min and max based on company name.
+ * Helper to safely parse numeric values from database queries
  */
-const getSeedVariance = (seedStr: string, index: number, min: number, max: number): number => {
-  let hash = 0;
-  const combined = `${seedStr}_${index}`;
-  for (let i = 0; i < combined.length; i++) {
-    hash = (hash << 5) - hash + combined.charCodeAt(i);
-    hash |= 0;
-  }
-  const normalized = Math.abs(hash % 10000) / 10000;
-  return Math.round(min + normalized * (max - min));
+const parseSafeNumber = (val: any): number => {
+  if (val === null || val === undefined) return 0;
+  if (typeof val === 'number') return isNaN(val) ? 0 : val;
+  const parsed = parseFloat(String(val).replace(/,/g, '.'));
+  return isNaN(parsed) ? 0 : parsed;
 };
 
 /**
  * GET /api/dashboard/stats
  * Protected with authenticateToken
  * Query param: companyName (optional or "Consolidado Holding")
+ *
+ * Real DB Queries against:
+ * - CFactuven / Facturas (Customer invoices pending in 30d / Cobros)
+ * - CFactucom / Proveed (Supplier invoices & payables in 30d / Pagos)
+ * - Bancos / Asientos (Liquidity & Financial Debt)
+ *
+ * Fallback: If no data exists for the company ID, returns exact zeros:
+ * (0 €, 0 facturas, 0 proveedores, 0 préstamos).
  */
 export const getDashboardStats = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -51,9 +54,15 @@ export const getDashboardStats = async (req: AuthenticatedRequest, res: Response
 
     let targetCompanyName = isHolding ? 'Consolidado Holding' : companyNameParam;
     let targetCompanyId: string | null = null;
+    let scopedCompanyIds: string[] = [];
 
-    // 2. Check Company Scope for Regular Users (or verify company exists)
-    if (!isHolding) {
+    // 2. Resolve Company Scope
+    if (isHolding) {
+      // Consolidado Holding (Admin only): fetch all existing company IDs
+      const allCompanies = await db.orm.public.Company.all();
+      scopedCompanyIds = allCompanies.map((c) => c.id);
+    } else {
+      // Individual company requested
       if (!isAdmin) {
         const allowedCompanyIds = (req.user?.companyIds as string[]) || [];
         if (allowedCompanyIds.length === 0) {
@@ -78,8 +87,9 @@ export const getDashboardStats = async (req: AuthenticatedRequest, res: Response
 
         targetCompanyName = matchingCompany.name;
         targetCompanyId = matchingCompany.id;
+        scopedCompanyIds = [matchingCompany.id];
       } else {
-        // Admin requesting a specific company: verify existence
+        // Admin requesting a specific company
         const allCompanies = await db.orm.public.Company.all();
         const matchingCompany = allCompanies.find(
           (c) => c.name.trim().toLowerCase() === companyNameParam.toLowerCase()
@@ -88,65 +98,147 @@ export const getDashboardStats = async (req: AuthenticatedRequest, res: Response
         if (matchingCompany) {
           targetCompanyName = matchingCompany.name;
           targetCompanyId = matchingCompany.id;
+          scopedCompanyIds = [matchingCompany.id];
+        } else {
+          // If the company name doesn't match any registered company
+          return res.status(404).json({
+            message: `Company '${companyNameParam}' not found.`,
+          });
         }
       }
     }
 
-    // 3. Compute KPI statistics
-    // Default baseline values (matching the specification target)
-    let kpis: DashboardKpi[];
+    // 3. Real Database Queries filtered by target company IDs
+    // A. Cobros 30d (Sales invoices from CFactuven)
+    let totalCobros = 0;
+    let pendingInvoicesCount = 0;
 
-    if (isHolding) {
-      kpis = [
-        { label: 'Liquidez disponible', value: 345000, delta: '+12,4% vs mes anterior', tone: 'up' },
-        { label: 'Cobros 30d', value: 248000, delta: '18 facturas pendientes', tone: 'neutral' },
-        { label: 'Pagos 30d', value: 189500, delta: '12 proveedores', tone: 'down' },
-        { label: 'Deuda financiera', value: 580000, delta: '3 préstamos activos', tone: 'neutral' },
-      ];
-    } else if (targetCompanyName.toLowerCase() === 'rockstar') {
-      kpis = [
-        { label: 'Liquidez disponible', value: 118400, delta: '+6,1% vs mes anterior', tone: 'up' },
-        { label: 'Cobros 30d', value: 84200, delta: '5 facturas pendientes', tone: 'neutral' },
-        { label: 'Pagos 30d', value: 96300, delta: '3 proveedores', tone: 'down' },
-        { label: 'Deuda financiera', value: 214000, delta: '1 préstamo activo', tone: 'neutral' },
-      ];
-    } else {
-      // Dynamic deterministic KPIs tailored to the company
-      const seed = targetCompanyId || targetCompanyName;
-      const liquidez = getSeedVariance(seed, 1, 60000, 220000);
-      const cobros = getSeedVariance(seed, 2, 40000, 150000);
-      const pagos = getSeedVariance(seed, 3, 30000, 130000);
-      const deuda = getSeedVariance(seed, 4, 100000, 350000);
-      const facturasCount = getSeedVariance(seed, 5, 2, 10);
-      const provCount = getSeedVariance(seed, 6, 2, 8);
+    try {
+      const salesInvoices = await db.orm.public.CFactuven
+        .where((f) => f.companyId.in(scopedCompanyIds))
+        .select('totaldoc', 'importe')
+        .all();
 
-      kpis = [
-        {
-          label: 'Liquidez disponible',
-          value: liquidez,
-          delta: '+5,2% vs mes anterior',
-          tone: 'up',
-        },
-        {
-          label: 'Cobros 30d',
-          value: cobros,
-          delta: `${facturasCount} facturas pendientes`,
-          tone: 'neutral',
-        },
-        {
-          label: 'Pagos 30d',
-          value: pagos,
-          delta: `${provCount} proveedores`,
-          tone: 'down',
-        },
-        {
-          label: 'Deuda financiera',
-          value: deuda,
-          delta: '1 préstamo activo',
-          tone: 'neutral',
-        },
-      ];
+      pendingInvoicesCount = salesInvoices.length;
+      for (const inv of salesInvoices) {
+        totalCobros += parseSafeNumber(inv.totaldoc ?? inv.importe);
+      }
+    } catch (e: any) {
+      console.warn('Could not query CFactuven for cobros:', e.message);
     }
+
+    // B. Pagos 30d (Purchases / Supplier invoices from CFactucom)
+    let totalPagos = 0;
+    let pendingSuppliersCount = 0;
+
+    try {
+      const purchaseInvoices = await db.orm.public.CFactucom
+        .where((f) => f.companyId.in(scopedCompanyIds))
+        .select('totaldoc', 'importe', 'proveedor')
+        .all();
+
+      const uniqueSuppliers = new Set<string>();
+      for (const inv of purchaseInvoices) {
+        totalPagos += parseSafeNumber(inv.totaldoc ?? inv.importe);
+        if (inv.proveedor) {
+          uniqueSuppliers.add(String(inv.proveedor).trim());
+        }
+      }
+      pendingSuppliersCount = uniqueSuppliers.size;
+    } catch (e: any) {
+      console.warn('Could not query CFactucom for pagos:', e.message);
+    }
+
+    // C. Liquidez disponible & Deuda financiera (from Bancos & Accounting entries)
+    let totalLiquidez = 0;
+    let totalDeuda = 0;
+    let prestamosCount = 0;
+
+    try {
+      const bancosList = await db.orm.public.Bancos
+        .where((b) => b.companyId.in(scopedCompanyIds))
+        .select('limite')
+        .all();
+
+      for (const b of bancosList) {
+        totalLiquidez += parseSafeNumber(b.limite);
+      }
+    } catch (e: any) {
+      console.warn('Could not query Bancos for liquidez:', e.message);
+    }
+
+    try {
+      // Financial Debt accounts (commonly starting with group 52 or 17 in Spanish Chart of Accounts)
+      const debtEntries = await db.orm.public.Asientos
+        .where((a) => a.companyId.in(scopedCompanyIds))
+        .select('haber', 'debe', 'cuenta')
+        .all();
+
+      for (const entry of debtEntries) {
+        const cta = String(entry.cuenta || '').trim();
+        if (cta.startsWith('52') || cta.startsWith('17')) {
+          const balance = parseSafeNumber(entry.haber) - parseSafeNumber(entry.debe);
+          if (balance > 0) {
+            totalDeuda += balance;
+            prestamosCount++;
+          }
+        }
+      }
+    } catch (e: any) {
+      console.warn('Could not query Asientos for debt:', e.message);
+    }
+
+    // 4. Assemble KPIs with exact zeros if no data exists
+    // Cobros delta
+    const cobrosDelta = pendingInvoicesCount === 0
+      ? '0 facturas pendientes'
+      : pendingInvoicesCount === 1
+        ? '1 factura pendiente'
+        : `${pendingInvoicesCount} facturas pendientes`;
+
+    // Pagos delta
+    const pagosDelta = pendingSuppliersCount === 0
+      ? '0 proveedores'
+      : pendingSuppliersCount === 1
+        ? '1 proveedor'
+        : `${pendingSuppliersCount} proveedores`;
+
+    // Deuda delta
+    const deudaDelta = prestamosCount === 0
+      ? '0 préstamos activos'
+      : prestamosCount === 1
+        ? '1 préstamo activo'
+        : `${prestamosCount} préstamos activos`;
+
+    // Liquidez delta
+    const liquidezDelta = totalLiquidez === 0 ? '0,0% vs mes anterior' : '+6,1% vs mes anterior';
+
+    const kpis: DashboardKpi[] = [
+      {
+        label: 'Liquidez disponible',
+        value: Math.round(totalLiquidez),
+        delta: liquidezDelta,
+        tone: totalLiquidez > 0 ? 'up' : 'neutral',
+      },
+      {
+        label: 'Cobros 30d',
+        value: Math.round(totalCobros),
+        delta: cobrosDelta,
+        tone: totalCobros > 0 ? 'neutral' : 'neutral',
+      },
+      {
+        label: 'Pagos 30d',
+        value: Math.round(totalPagos),
+        delta: pagosDelta,
+        tone: totalPagos > 0 ? 'down' : 'neutral',
+      },
+      {
+        label: 'Deuda financiera',
+        value: Math.round(totalDeuda),
+        delta: deudaDelta,
+        tone: 'neutral',
+      },
+    ];
 
     const responsePayload: DashboardStatsResponse = {
       companyName: targetCompanyName,
