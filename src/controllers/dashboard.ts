@@ -37,6 +37,7 @@ export interface UpcomingMovementsResponse {
 export interface CompanyPosition {
   company: string;
   companyId: string;
+  subcompanyCode: string | null;
   banks: number;
   cash: number;
   receivables: number;
@@ -62,6 +63,7 @@ const parseSafeNumber = (val: any): number => {
  * Supports:
  * - isHolding ("Consolidado Holding"): Only Admin allowed. Returns all company IDs.
  * - Single company: Non-admins must have permission in user.companyIds.
+ * - Optional subcompanyCode / empresaCode.
  */
 const resolveCompanyScope = async (
   req: AuthenticatedRequest,
@@ -72,9 +74,24 @@ const resolveCompanyScope = async (
   targetCompanyName: string;
   targetCompanyId: string | null;
   scopedCompanyIds: string[];
+  subcompanyCode: string | null;
+  subcompanyName: string | null;
 } | null> => {
   const rawCompanyId = req.query.companyId ?? req.query.company_id;
   const companyIdParam = typeof rawCompanyId === 'string' ? rawCompanyId.trim() : '';
+
+  const rawSubcompany =
+    req.query.subcompanyCode ??
+    req.query.subcompany_code ??
+    req.query.empresaCode ??
+    req.query.empresa_code ??
+    req.query.empresa ??
+    req.query.codigo ??
+    req.query.subcompany;
+  const subcompanyCodeParam =
+    typeof rawSubcompany === 'string' && rawSubcompany.trim() && rawSubcompany.trim().toLowerCase() !== 'all'
+      ? rawSubcompany.trim()
+      : null;
 
   const isHolding =
     (!companyNameParam && !companyIdParam) ||
@@ -147,11 +164,31 @@ const resolveCompanyScope = async (
     }
   }
 
+  let subcompanyName: string | null = null;
+  if (subcompanyCodeParam && targetCompanyId) {
+    try {
+      const emp = await db.orm.public.Empresa
+        .where((e) => e.companyId.eq(targetCompanyId))
+        .where((e) => e.codigo.eq(subcompanyCodeParam as any))
+        .first();
+      if (emp) {
+        subcompanyName = emp.nombre ? String(emp.nombre).trim() : (emp.nombre2 ? String(emp.nombre2).trim() : null);
+        if (subcompanyName) {
+          targetCompanyName = `${targetCompanyName} - ${subcompanyName}`;
+        }
+      }
+    } catch (e: any) {
+      console.warn('Could not query Empresa for subcompany name:', e.message);
+    }
+  }
+
   return {
     isHolding,
     targetCompanyName,
     targetCompanyId,
     scopedCompanyIds,
+    subcompanyCode: subcompanyCodeParam,
+    subcompanyName,
   };
 };
 
@@ -167,15 +204,21 @@ export const getDashboardStats = async (req: AuthenticatedRequest, res: Response
     const scope = await resolveCompanyScope(req, res, companyNameParam);
     if (!scope) return;
 
-    const { targetCompanyName, scopedCompanyIds } = scope;
+    const { targetCompanyName, scopedCompanyIds, subcompanyCode } = scope;
 
     // A. Cobros 30d (Sales invoices from CFactuven)
     let totalCobros = 0;
     let pendingInvoicesCount = 0;
 
     try {
-      const salesInvoices = await db.orm.public.CFactuven
-        .where((f) => f.companyId.in(scopedCompanyIds))
+      let salesQuery = db.orm.public.CFactuven
+        .where((f) => f.companyId.in(scopedCompanyIds));
+
+      if (subcompanyCode) {
+        salesQuery = salesQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+      }
+
+      const salesInvoices = await salesQuery
         .select('totaldoc', 'importe')
         .all();
 
@@ -192,8 +235,14 @@ export const getDashboardStats = async (req: AuthenticatedRequest, res: Response
     let pendingSuppliersCount = 0;
 
     try {
-      const purchaseInvoices = await db.orm.public.CFactucom
-        .where((f) => f.companyId.in(scopedCompanyIds))
+      let purchaseQuery = db.orm.public.CFactucom
+        .where((f) => f.companyId.in(scopedCompanyIds));
+
+      if (subcompanyCode) {
+        purchaseQuery = purchaseQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+      }
+
+      const purchaseInvoices = await purchaseQuery
         .select('totaldoc', 'importe', 'proveedor')
         .all();
 
@@ -228,8 +277,14 @@ export const getDashboardStats = async (req: AuthenticatedRequest, res: Response
     }
 
     try {
-      const debtEntries = await db.orm.public.Asientos
-        .where((a) => a.companyId.in(scopedCompanyIds))
+      let debtQuery = db.orm.public.Asientos
+        .where((a) => a.companyId.in(scopedCompanyIds));
+
+      if (subcompanyCode) {
+        debtQuery = debtQuery.where((a) => a.empresa.eq(subcompanyCode as any));
+      }
+
+      const debtEntries = await debtQuery
         .select('haber', 'debe', 'cuenta')
         .all();
 
@@ -321,7 +376,7 @@ export const getDashboardCashflow = async (req: AuthenticatedRequest, res: Respo
     const scope = await resolveCompanyScope(req, res, companyNameParam);
     if (!scope) return;
 
-    const { targetCompanyName, scopedCompanyIds } = scope;
+    const { targetCompanyName, scopedCompanyIds, subcompanyCode } = scope;
 
     // Spanish 3-letter month abbreviations
     const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -345,8 +400,14 @@ export const getDashboardCashflow = async (req: AuthenticatedRequest, res: Respo
 
     // Query Inflows (CFactuven)
     try {
-      const salesInvoices = await db.orm.public.CFactuven
-        .where((f) => f.companyId.in(scopedCompanyIds))
+      let salesQuery = db.orm.public.CFactuven
+        .where((f) => f.companyId.in(scopedCompanyIds));
+
+      if (subcompanyCode) {
+        salesQuery = salesQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+      }
+
+      const salesInvoices = await salesQuery
         .select('totaldoc', 'importe', 'created', 'modified')
         .all();
 
@@ -383,8 +444,14 @@ export const getDashboardCashflow = async (req: AuthenticatedRequest, res: Respo
 
     // Query Outflows (CFactucom)
     try {
-      const purchaseInvoices = await db.orm.public.CFactucom
-        .where((f) => f.companyId.in(scopedCompanyIds))
+      let purchaseQuery = db.orm.public.CFactucom
+        .where((f) => f.companyId.in(scopedCompanyIds));
+
+      if (subcompanyCode) {
+        purchaseQuery = purchaseQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+      }
+
+      const purchaseInvoices = await purchaseQuery
         .select('totaldoc', 'importe', 'created', 'modified')
         .all();
 
@@ -448,7 +515,7 @@ export const getDashboardUpcoming = async (req: AuthenticatedRequest, res: Respo
     const scope = await resolveCompanyScope(req, res, companyNameParam);
     if (!scope) return;
 
-    const { targetCompanyName, scopedCompanyIds } = scope;
+    const { targetCompanyName, scopedCompanyIds, subcompanyCode } = scope;
     const rawMovements: Array<{
       dateStr: string;
       timestamp: number;
@@ -460,8 +527,14 @@ export const getDashboardUpcoming = async (req: AuthenticatedRequest, res: Respo
 
     // A. Inflows from CFactuven
     try {
-      const salesInvoices = await db.orm.public.CFactuven
-        .where((f) => f.companyId.in(scopedCompanyIds))
+      let salesQuery = db.orm.public.CFactuven
+        .where((f) => f.companyId.in(scopedCompanyIds));
+
+      if (subcompanyCode) {
+        salesQuery = salesQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+      }
+
+      const salesInvoices = await salesQuery
         .select('numero', 'totaldoc', 'importe', 'created', 'modified')
         .all();
 
@@ -494,8 +567,14 @@ export const getDashboardUpcoming = async (req: AuthenticatedRequest, res: Respo
 
     // B. Outflows from CFactucom
     try {
-      const purchaseInvoices = await db.orm.public.CFactucom
-        .where((f) => f.companyId.in(scopedCompanyIds))
+      let purchaseQuery = db.orm.public.CFactucom
+        .where((f) => f.companyId.in(scopedCompanyIds));
+
+      if (subcompanyCode) {
+        purchaseQuery = purchaseQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+      }
+
+      const purchaseInvoices = await purchaseQuery
         .select('numero', 'totaldoc', 'importe', 'created', 'modified', 'referencia')
         .all();
 
@@ -619,7 +698,82 @@ export const getDashboardPosition = async (req: AuthenticatedRequest, res: Respo
 
     const allCompanyIds = targetCompanies.map((c) => c.id);
 
-    // Batch query Bancos
+    // Support optional subcompanyCode filter on position endpoint
+    const rawSubcompany =
+      req.query.subcompanyCode ??
+      req.query.subcompany_code ??
+      req.query.empresaCode ??
+      req.query.empresa_code ??
+      req.query.empresa ??
+      req.query.codigo ??
+      req.query.subcompany;
+    const subcompanyCodeFilter =
+      typeof rawSubcompany === 'string' && rawSubcompany.trim() && rawSubcompany.trim().toLowerCase() !== 'all'
+        ? rawSubcompany.trim()
+        : null;
+
+    // Fetch subcompanies from Empresa table for all target companies
+    let subcompanies: Array<{ companyId: string; codigo: string; nombre: string }> = [];
+    try {
+      let empresaQuery = db.orm.public.Empresa
+        .where((e) => e.companyId.in(allCompanyIds));
+
+      if (subcompanyCodeFilter) {
+        empresaQuery = empresaQuery.where((e) => e.codigo.eq(subcompanyCodeFilter as any));
+      }
+
+      const rawEmpresas = await empresaQuery
+        .select('companyId', 'codigo', 'nombre', 'nombre2')
+        .all();
+
+      for (const emp of rawEmpresas) {
+        if (emp.companyId && emp.codigo) {
+          const cid = String(emp.companyId).trim();
+          const codigo = String(emp.codigo).trim();
+          const nombre = emp.nombre ? String(emp.nombre).trim() : (emp.nombre2 ? String(emp.nombre2).trim() : `Empresa ${codigo}`);
+          subcompanies.push({ companyId: cid, codigo, nombre });
+        }
+      }
+    } catch (e: any) {
+      console.warn('Could not query Empresa for position breakdown:', e.message);
+    }
+
+    // Build breakdown entities:
+    // If a target company has subcompanies in Empresa, include each subcompany.
+    // If not (or if subcompanies query returned empty for that company), fallback to group level.
+    interface PositionTarget {
+      companyId: string;
+      subcompanyCode: string | null;
+      displayName: string;
+    }
+
+    const companyMap = new Map<string, string>();
+    for (const c of targetCompanies) {
+      companyMap.set(c.id, c.name);
+    }
+
+    const positionTargets: PositionTarget[] = [];
+    for (const c of targetCompanies) {
+      const companySubs = subcompanies.filter((s) => s.companyId === c.id);
+      if (companySubs.length > 0) {
+        for (const sub of companySubs) {
+          positionTargets.push({
+            companyId: c.id,
+            subcompanyCode: sub.codigo,
+            displayName: `${c.name} - ${sub.nombre}`,
+          });
+        }
+      } else if (!subcompanyCodeFilter) {
+        // Fallback to top-level company if no subcompany exists
+        positionTargets.push({
+          companyId: c.id,
+          subcompanyCode: null,
+          displayName: c.name,
+        });
+      }
+    }
+
+    // Batch query Bancos (grouped by companyId)
     const bankLimitsByCompany: Record<string, number> = {};
     try {
       const bancosList = await db.orm.public.Bancos
@@ -637,54 +791,104 @@ export const getDashboardPosition = async (req: AuthenticatedRequest, res: Respo
       console.warn('Could not query Bancos for position:', e.message);
     }
 
-    // Batch query CFactuven (receivables)
-    const receivablesByCompany: Record<string, number> = {};
+    // Batch query CFactuven (receivables) with companyId and empresa
+    const receivablesByCompanySub: Record<string, number> = {};
+    const receivablesByCompanyTotal: Record<string, number> = {};
     try {
-      const salesInvoices = await db.orm.public.CFactuven
-        .where((f) => f.companyId.in(allCompanyIds))
-        .select('companyId', 'totaldoc', 'importe')
+      let salesQuery = db.orm.public.CFactuven
+        .where((f) => f.companyId.in(allCompanyIds));
+
+      if (subcompanyCodeFilter) {
+        salesQuery = salesQuery.where((f) => f.empresa.eq(subcompanyCodeFilter as any));
+      }
+
+      const salesInvoices = await salesQuery
+        .select('companyId', 'empresa', 'totaldoc', 'importe')
         .all();
 
       for (const inv of salesInvoices) {
         if (inv.companyId) {
           const cid = String(inv.companyId).trim();
-          receivablesByCompany[cid] =
-            (receivablesByCompany[cid] || 0) + parseSafeNumber(inv.totaldoc ?? inv.importe);
+          const emp = inv.empresa ? String(inv.empresa).trim() : '';
+          const amt = parseSafeNumber(inv.totaldoc ?? inv.importe);
+          receivablesByCompanyTotal[cid] = (receivablesByCompanyTotal[cid] || 0) + amt;
+          if (emp) {
+            const key = `${cid}_${emp}`;
+            receivablesByCompanySub[key] = (receivablesByCompanySub[key] || 0) + amt;
+          }
         }
       }
     } catch (e: any) {
       console.warn('Could not query CFactuven for position:', e.message);
     }
 
-    // Batch query CFactucom (payables)
-    const payablesByCompany: Record<string, number> = {};
+    // Batch query CFactucom (payables) with companyId and empresa
+    const payablesByCompanySub: Record<string, number> = {};
+    const payablesByCompanyTotal: Record<string, number> = {};
     try {
-      const purchaseInvoices = await db.orm.public.CFactucom
-        .where((f) => f.companyId.in(allCompanyIds))
-        .select('companyId', 'totaldoc', 'importe')
+      let purchaseQuery = db.orm.public.CFactucom
+        .where((f) => f.companyId.in(allCompanyIds));
+
+      if (subcompanyCodeFilter) {
+        purchaseQuery = purchaseQuery.where((f) => f.empresa.eq(subcompanyCodeFilter as any));
+      }
+
+      const purchaseInvoices = await purchaseQuery
+        .select('companyId', 'empresa', 'totaldoc', 'importe')
         .all();
 
       for (const inv of purchaseInvoices) {
         if (inv.companyId) {
           const cid = String(inv.companyId).trim();
-          payablesByCompany[cid] =
-            (payablesByCompany[cid] || 0) + parseSafeNumber(inv.totaldoc ?? inv.importe);
+          const emp = inv.empresa ? String(inv.empresa).trim() : '';
+          const amt = parseSafeNumber(inv.totaldoc ?? inv.importe);
+          payablesByCompanyTotal[cid] = (payablesByCompanyTotal[cid] || 0) + amt;
+          if (emp) {
+            const key = `${cid}_${emp}`;
+            payablesByCompanySub[key] = (payablesByCompanySub[key] || 0) + amt;
+          }
         }
       }
     } catch (e: any) {
       console.warn('Could not query CFactucom for position:', e.message);
     }
 
+    // Count how many subcompany rows belong to each company to allocate bank limits proportionally or show total
+    const subCountPerCompany: Record<string, number> = {};
+    for (const t of positionTargets) {
+      subCountPerCompany[t.companyId] = (subCountPerCompany[t.companyId] || 0) + 1;
+    }
+
     // Assemble response
-    const positions: CompanyPosition[] = targetCompanies.map((c) => {
-      const cid = c.id;
+    const positions: CompanyPosition[] = positionTargets.map((target) => {
+      const cid = target.companyId;
+      const emp = target.subcompanyCode;
+      const count = subCountPerCompany[cid] || 1;
+
+      let recAmt = 0;
+      let payAmt = 0;
+
+      if (emp) {
+        const key = `${cid}_${emp}`;
+        recAmt = receivablesByCompanySub[key] || 0;
+        payAmt = payablesByCompanySub[key] || 0;
+      } else {
+        recAmt = receivablesByCompanyTotal[cid] || 0;
+        payAmt = payablesByCompanyTotal[cid] || 0;
+      }
+
+      // Pro-rate bank limit across subcompanies or allocate evenly
+      const totalBank = bankLimitsByCompany[cid] || 0;
+      const bankAmt = count > 1 ? Math.round(totalBank / count) : totalBank;
+
       return {
-        company: c.name,
+        company: target.displayName,
         companyId: cid,
-        banks: Math.round(bankLimitsByCompany[cid] || 0),
+        subcompanyCode: emp,
+        banks: Math.round(bankAmt),
         cash: 0,
-        receivables: Math.round(receivablesByCompany[cid] || 0),
-        payables: Math.round(payablesByCompany[cid] || 0),
+        receivables: Math.round(recAmt),
+        payables: Math.round(payAmt),
       };
     });
 

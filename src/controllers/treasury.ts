@@ -44,9 +44,23 @@ const resolveCompanyScope = async (
   isHolding: boolean;
   targetCompanyId: string | null;
   scopedCompanyIds: string[];
+  subcompanyCode: string | null;
 } | null> => {
   const rawCompanyId = req.query.companyId ?? req.query.company_id;
   const companyIdParam = typeof rawCompanyId === 'string' ? rawCompanyId.trim() : '';
+
+  const rawSubcompany =
+    req.query.subcompanyCode ??
+    req.query.subcompany_code ??
+    req.query.empresaCode ??
+    req.query.empresa_code ??
+    req.query.empresa ??
+    req.query.codigo ??
+    req.query.subcompany;
+  const subcompanyCodeParam =
+    typeof rawSubcompany === 'string' && rawSubcompany.trim() && rawSubcompany.trim().toLowerCase() !== 'all'
+      ? rawSubcompany.trim()
+      : null;
 
   const isHolding = !companyIdParam || companyIdParam.toLowerCase() === 'all' || companyIdParam.toLowerCase() === 'holding';
   const isAdmin = req.user?.role === 'Admin';
@@ -64,6 +78,7 @@ const resolveCompanyScope = async (
       isHolding: true,
       targetCompanyId: null,
       scopedCompanyIds: userCompanyIds,
+      subcompanyCode: subcompanyCodeParam,
     };
   }
 
@@ -73,6 +88,7 @@ const resolveCompanyScope = async (
       isHolding: true,
       targetCompanyId: null,
       scopedCompanyIds: allCompanies.map((c) => c.id),
+      subcompanyCode: subcompanyCodeParam,
     };
   }
 
@@ -91,6 +107,7 @@ const resolveCompanyScope = async (
     isHolding: false,
     targetCompanyId: companyIdParam,
     scopedCompanyIds: [companyIdParam],
+    subcompanyCode: subcompanyCodeParam,
   };
 };
 
@@ -103,7 +120,7 @@ export const getTreasurySummary = async (req: AuthenticatedRequest, res: Respons
     const scope = await resolveCompanyScope(req, res);
     if (!scope) return;
 
-    const { scopedCompanyIds } = scope;
+    const { scopedCompanyIds, subcompanyCode } = scope;
 
     // 1. Bancos: Total liquid cash + limit
     let totalBanks = 0;
@@ -123,8 +140,14 @@ export const getTreasurySummary = async (req: AuthenticatedRequest, res: Respons
 
     // 2. Short term debt from Asientos (accounts group 52 and 17)
     try {
-      const debtEntries = await db.orm.public.Asientos
-        .where((a) => a.companyId.in(scopedCompanyIds))
+      let debtQuery = db.orm.public.Asientos
+        .where((a) => a.companyId.in(scopedCompanyIds));
+
+      if (subcompanyCode) {
+        debtQuery = debtQuery.where((a) => a.empresa.eq(subcompanyCode as any));
+      }
+
+      const debtEntries = await debtQuery
         .select('haber', 'debe', 'cuenta')
         .all();
 
@@ -145,8 +168,14 @@ export const getTreasurySummary = async (req: AuthenticatedRequest, res: Respons
     let pendingReceivables = 0;
     let countReceivables = 0;
     try {
-      const salesInvoices = await db.orm.public.CFactuven
-        .where((f) => f.companyId.in(scopedCompanyIds))
+      let salesQuery = db.orm.public.CFactuven
+        .where((f) => f.companyId.in(scopedCompanyIds));
+
+      if (subcompanyCode) {
+        salesQuery = salesQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+      }
+
+      const salesInvoices = await salesQuery
         .select('totaldoc', 'importe')
         .all();
 
@@ -162,8 +191,14 @@ export const getTreasurySummary = async (req: AuthenticatedRequest, res: Respons
     let pendingPayables = 0;
     let countPayables = 0;
     try {
-      const purchaseInvoices = await db.orm.public.CFactucom
-        .where((f) => f.companyId.in(scopedCompanyIds))
+      let purchaseQuery = db.orm.public.CFactucom
+        .where((f) => f.companyId.in(scopedCompanyIds));
+
+      if (subcompanyCode) {
+        purchaseQuery = purchaseQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+      }
+
+      const purchaseInvoices = await purchaseQuery
         .select('totaldoc', 'importe')
         .all();
 
@@ -256,7 +291,7 @@ export const getTreasuryReceivables = async (req: AuthenticatedRequest, res: Res
     const scope = await resolveCompanyScope(req, res);
     if (!scope) return;
 
-    const { scopedCompanyIds } = scope;
+    const { scopedCompanyIds, subcompanyCode } = scope;
     const statusParam = (req.query.status as string)?.toLowerCase();
     const fromDate = req.query.from ? new Date(req.query.from as string) : null;
     const toDate = req.query.to ? new Date(req.query.to as string) : null;
@@ -264,9 +299,15 @@ export const getTreasuryReceivables = async (req: AuthenticatedRequest, res: Res
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string, 10) || 20));
 
     // Fetch invoices from CFactuven
-    const invoicesData = await db.orm.public.CFactuven
-      .where((f) => f.companyId.in(scopedCompanyIds))
-      .select('companyId', 'numero', 'totaldoc', 'importe', 'created', 'modified', 'fechaOper', 'referencia')
+    let salesQuery = db.orm.public.CFactuven
+      .where((f) => f.companyId.in(scopedCompanyIds));
+
+    if (subcompanyCode) {
+      salesQuery = salesQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+    }
+
+    const invoicesData = await salesQuery
+      .select('companyId', 'empresa', 'numero', 'totaldoc', 'importe', 'created', 'modified', 'fechaOper', 'referencia')
       .all();
 
     // Fetch client names lookup for scoped companies
@@ -336,7 +377,7 @@ export const getTreasuryReceivables = async (req: AuthenticatedRequest, res: Res
       const clientName = clientMap.get(clientCode) || (clientCode ? `Cliente ${clientCode}` : 'Cliente Comercial');
 
       formattedInvoices.push({
-        id: `${inv.companyId}-${inv.numero || Math.random()}`,
+        id: `${inv.companyId}-${inv.empresa || ''}-${inv.numero || Math.random()}`,
         invoiceNumber: String(inv.numero || '').trim() || 'N/A',
         clientName,
         issueDate: issueDate.toISOString().split('T')[0],
@@ -344,6 +385,8 @@ export const getTreasuryReceivables = async (req: AuthenticatedRequest, res: Res
         totalAmount: Math.round(totalAmount * 100) / 100,
         pendingAmount: Math.round(totalAmount * 100) / 100,
         status,
+        companyId: inv.companyId,
+        subcompanyCode: inv.empresa ? String(inv.empresa).trim() : null,
       });
     }
 
@@ -383,7 +426,7 @@ export const getTreasuryPayables = async (req: AuthenticatedRequest, res: Respon
     const scope = await resolveCompanyScope(req, res);
     if (!scope) return;
 
-    const { scopedCompanyIds } = scope;
+    const { scopedCompanyIds, subcompanyCode } = scope;
     const statusParam = (req.query.status as string)?.toLowerCase();
     const fromDate = req.query.from ? new Date(req.query.from as string) : null;
     const toDate = req.query.to ? new Date(req.query.to as string) : null;
@@ -391,9 +434,15 @@ export const getTreasuryPayables = async (req: AuthenticatedRequest, res: Respon
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string, 10) || 20));
 
     // Fetch invoices from CFactucom
-    const invoicesData = await db.orm.public.CFactucom
-      .where((f) => f.companyId.in(scopedCompanyIds))
-      .select('companyId', 'numero', 'proveedor', 'totaldoc', 'importe', 'created', 'modified', 'referencia')
+    let purchaseQuery = db.orm.public.CFactucom
+      .where((f) => f.companyId.in(scopedCompanyIds));
+
+    if (subcompanyCode) {
+      purchaseQuery = purchaseQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+    }
+
+    const invoicesData = await purchaseQuery
+      .select('companyId', 'empresa', 'numero', 'proveedor', 'totaldoc', 'importe', 'created', 'modified', 'referencia')
       .all();
 
     // Fetch supplier names lookup
@@ -459,7 +508,7 @@ export const getTreasuryPayables = async (req: AuthenticatedRequest, res: Respon
       const supplierName = supplierMap.get(provCode) || (provCode ? `Proveedor ${provCode}` : 'Proveedor General');
 
       formattedInvoices.push({
-        id: `${inv.companyId}-${inv.numero || Math.random()}`,
+        id: `${inv.companyId}-${inv.empresa || ''}-${inv.numero || Math.random()}`,
         invoiceNumber: String(inv.numero || '').trim() || 'N/A',
         supplierName,
         issueDate: issueDate.toISOString().split('T')[0],
@@ -467,6 +516,8 @@ export const getTreasuryPayables = async (req: AuthenticatedRequest, res: Respon
         totalAmount: Math.round(totalAmount * 100) / 100,
         pendingAmount: Math.round(totalAmount * 100) / 100,
         status,
+        companyId: inv.companyId,
+        subcompanyCode: inv.empresa ? String(inv.empresa).trim() : null,
       });
     }
 
@@ -505,7 +556,7 @@ export const getTreasuryForecast = async (req: AuthenticatedRequest, res: Respon
     const scope = await resolveCompanyScope(req, res);
     if (!scope) return;
 
-    const { scopedCompanyIds } = scope;
+    const { scopedCompanyIds, subcompanyCode } = scope;
     const horizon = ((req.query.horizon as string) || '30d').toLowerCase();
 
     // 1. Calculate opening balance
@@ -523,14 +574,26 @@ export const getTreasuryForecast = async (req: AuthenticatedRequest, res: Respon
     }
 
     // 2. Query receivables (inflows)
-    const salesInvoices = await db.orm.public.CFactuven
-      .where((f) => f.companyId.in(scopedCompanyIds))
+    let salesQuery = db.orm.public.CFactuven
+      .where((f) => f.companyId.in(scopedCompanyIds));
+
+    if (subcompanyCode) {
+      salesQuery = salesQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+    }
+
+    const salesInvoices = await salesQuery
       .select('totaldoc', 'importe', 'created', 'fechaOper', 'modified')
       .all();
 
     // 3. Query payables (outflows)
-    const purchaseInvoices = await db.orm.public.CFactucom
-      .where((f) => f.companyId.in(scopedCompanyIds))
+    let purchaseQuery = db.orm.public.CFactucom
+      .where((f) => f.companyId.in(scopedCompanyIds));
+
+    if (subcompanyCode) {
+      purchaseQuery = purchaseQuery.where((f) => f.empresa.eq(subcompanyCode as any));
+    }
+
+    const purchaseInvoices = await purchaseQuery
       .select('totaldoc', 'importe', 'created', 'modified')
       .all();
 
@@ -648,7 +711,7 @@ export const getTreasuryLoans = async (req: AuthenticatedRequest, res: Response)
     const scope = await resolveCompanyScope(req, res);
     if (!scope) return;
 
-    const { scopedCompanyIds } = scope;
+    const { scopedCompanyIds, subcompanyCode } = scope;
     const loans: Array<{
       id: string;
       companyId: string;
@@ -690,8 +753,14 @@ export const getTreasuryLoans = async (req: AuthenticatedRequest, res: Response)
 
     // 2. Bank debts / loans from Asientos (group 52 & 17)
     try {
-      const debtEntries = await db.orm.public.Asientos
-        .where((a) => a.companyId.in(scopedCompanyIds))
+      let debtQuery = db.orm.public.Asientos
+        .where((a) => a.companyId.in(scopedCompanyIds));
+
+      if (subcompanyCode) {
+        debtQuery = debtQuery.where((a) => a.empresa.eq(subcompanyCode as any));
+      }
+
+      const debtEntries = await debtQuery
         .select('companyId', 'cuenta', 'definicion', 'haber', 'debe', 'fecha')
         .all();
 

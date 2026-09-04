@@ -110,6 +110,7 @@ export const createCompany = async (req: AuthenticatedRequest, res: Response) =>
  * 2. GET /api/companies (Protected with authenticateToken)
  * Returns all companies.
  * If non-admin user has specific companyIds assigned, filters by their scope.
+ * Each company group includes its subcompanies from Empresa table.
  */
 export const getCompanies = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -137,9 +138,53 @@ export const getCompanies = async (req: AuthenticatedRequest, res: Response) => 
       }
     }
 
+    // Fetch subcompanies from Empresa for all accessible company IDs
+    const companyIds = companies.map((c) => c.id);
+    const subcompaniesByCompanyId: Record<string, Array<{
+      companyId: string;
+      codigo: string;
+      nombre: string;
+      cif: string;
+    }>> = {};
+
+    if (companyIds.length > 0) {
+      try {
+        const empresas = await db.orm.public.Empresa
+          .where((e) => e.companyId.in(companyIds))
+          .select('companyId', 'codigo', 'nombre', 'nombre2', 'cif')
+          .all();
+
+        for (const emp of empresas) {
+          if (emp.companyId) {
+            const cid = String(emp.companyId).trim();
+            if (!subcompaniesByCompanyId[cid]) {
+              subcompaniesByCompanyId[cid] = [];
+            }
+            const codigo = emp.codigo ? String(emp.codigo).trim() : '';
+            const nombre = emp.nombre ? String(emp.nombre).trim() : (emp.nombre2 ? String(emp.nombre2).trim() : '');
+            const cif = emp.cif ? String(emp.cif).trim() : '';
+
+            subcompaniesByCompanyId[cid].push({
+              companyId: cid,
+              codigo,
+              nombre,
+              cif,
+            });
+          }
+        }
+      } catch (e: any) {
+        console.warn('Could not query Empresa for subcompanies in getCompanies:', e.message);
+      }
+    }
+
+    const companiesWithSubcompanies = companies.map((c) => ({
+      ...c,
+      subcompanies: subcompaniesByCompanyId[c.id] || [],
+    }));
+
     return res.json({
-      companies,
-      total: companies.length,
+      companies: companiesWithSubcompanies,
+      total: companiesWithSubcompanies.length,
     });
   } catch (error: any) {
     console.error('Error fetching companies:', error);
@@ -149,3 +194,54 @@ export const getCompanies = async (req: AuthenticatedRequest, res: Response) => 
     });
   }
 };
+
+/**
+ * 3. GET /api/companies/:companyId/subcompanies and GET /api/companies/subcompanies
+ * (Protected with authenticateToken)
+ * Query empresa where company_id = :companyId.
+ * Return: [{ companyId, codigo, nombre, cif }]
+ */
+export const getSubcompanies = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const rawCompanyId = req.params.companyId ?? req.query.companyId ?? req.query.company_id;
+    const companyId = typeof rawCompanyId === 'string' ? rawCompanyId.trim() : '';
+
+    if (!companyId) {
+      return res.status(400).json({
+        message: 'companyId is required to fetch subcompanies',
+      });
+    }
+
+    const user = req.user;
+    const isAdmin = user?.role === 'Admin';
+    const userCompanyIds = (user?.companyIds as string[]) || [];
+
+    // Non-admin permission check
+    if (!isAdmin && !userCompanyIds.includes(companyId)) {
+      return res.status(403).json({
+        message: `Access denied: You do not have permission to view subcompanies for company ${companyId}.`,
+      });
+    }
+
+    const empresas = await db.orm.public.Empresa
+      .where((e) => e.companyId.eq(companyId))
+      .select('companyId', 'codigo', 'nombre', 'nombre2', 'cif')
+      .all();
+
+    const subcompanies = empresas.map((emp) => ({
+      companyId: emp.companyId ? String(emp.companyId).trim() : companyId,
+      codigo: emp.codigo ? String(emp.codigo).trim() : '',
+      nombre: emp.nombre ? String(emp.nombre).trim() : (emp.nombre2 ? String(emp.nombre2).trim() : ''),
+      cif: emp.cif ? String(emp.cif).trim() : '',
+    }));
+
+    return res.status(200).json(subcompanies);
+  } catch (error: any) {
+    console.error('Error fetching subcompanies:', error);
+    return res.status(500).json({
+      message: 'Error fetching subcompanies',
+      error: error.message,
+    });
+  }
+};
+
