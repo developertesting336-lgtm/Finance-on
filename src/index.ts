@@ -9,6 +9,8 @@ import webhookRoutes from './routes/webhook.js';
 import companyRoutes from './routes/companies.js';
 import dashboardRoutes from './routes/dashboard.js';
 import treasuryRoutes from './routes/treasury.js';
+import { getSubcompanies } from './controllers/companies.js';
+import { authenticateToken } from './middleware/auth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -49,6 +51,8 @@ app.use(express.json({ limit: '50mb' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/companies', companyRoutes);
+app.get('/api/subcompanies', authenticateToken, getSubcompanies);
+app.get('/api/subcompanies/:companyId', authenticateToken, getSubcompanies);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/treasury', treasuryRoutes);
 app.use('/api/webhook', webhookRoutes);
