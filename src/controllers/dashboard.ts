@@ -580,29 +580,13 @@ export const getDashboardPosition = async (req: AuthenticatedRequest, res: Respo
     let targetCompanies: Array<{ id: string; name: string }> = [];
 
     if (isAdmin) {
-      if (isHolding) {
-        // Holding / no filter: fetch all companies
-        const companies = await db.orm.public.Company
-          .orderBy((c) => c.name.asc())
-          .all();
-        targetCompanies = companies.map((c) => ({ id: c.id, name: c.name }));
-      } else {
-        // Specific company selected: filter by companyId or companyName
-        const companies = await db.orm.public.Company.all();
-        const matching = companies.find((c) => {
-          if (companyIdParam && c.id.trim() === companyIdParam) return true;
-          if (companyNameParam && c.name.trim().toLowerCase() === companyNameParam.toLowerCase()) return true;
-          return false;
-        });
-        if (matching) {
-          targetCompanies = [{ id: matching.id, name: matching.name }];
-        } else {
-          return res.status(404).json({
-            message: `Company '${companyIdParam || companyNameParam}' not found.`,
-          });
-        }
-      }
+      // Admin ALWAYS sees all companies in the position table:
+      const companies = await db.orm.public.Company
+        .orderBy((c) => c.name.asc())
+        .all();
+      targetCompanies = companies.map((c) => ({ id: c.id, name: c.name }));
     } else {
+      // Non-admin sees their scoped companies:
       if (userCompanyIds.length === 0) {
         return res.status(200).json({ positions: [] });
       }
