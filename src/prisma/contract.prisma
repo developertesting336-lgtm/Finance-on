@@ -2,26 +2,6 @@
 // Contract inferred from the live database schema. Edit as needed, then run `prisma contract emit`.
 
 // WARNING: This table has no primary key in the database
-model Accesos {
-  companyId  String?    @map("company_id")
-  empresa    Char(2)?
-  modulo     Char(20)?
-  usuario    Char(15)?
-  nivel      Int?
-  barraTop   Int?       @map("barra_top")
-  barraLeft  Int?       @map("barra_left")
-  abarraTop  Int?       @map("abarra_top")
-  abarraLeft Int?       @map("abarra_left")
-  vista      Boolean?
-  guidId     Char(50)?  @map("guid_id")
-  created    Timestamp?
-  modified   Timestamp?
-
-  @@index([companyId], map: "idx_accesos_company_id")
-  @@map("accesos")
-}
-
-// WARNING: This table has no primary key in the database
 model ActiCli {
   companyId String?    @map("company_id")
   cliente   Char(9)?
@@ -219,8 +199,8 @@ model Anuales {
   descripcion String?
   ap          Char(6)?
   fet         Boolean?
-  anterior    Numeric(20, 3)?
-  actual      Numeric(20, 3)?
+  anterior    Numeric(24, 4)?
+  actual      Numeric(24, 4)?
   gf          Int?
   pb          Char(1)?
   nivel       Int?
@@ -312,17 +292,17 @@ model Articulo {
   abrev       Char(50)?
   familia     Char(2)?
   marca       Char(2)?
-  minimo      Numeric(15, 6)?
-  maximo      Numeric(15, 6)?
+  minimo      Numeric(18, 6)?
+  maximo      Numeric(18, 6)?
   aviso       Boolean?
   baja        Boolean?
   tipoIva     Char(2)?        @map("tipo_iva")
   retencion   Char(2)?
   ivaInc      Boolean?        @map("iva_inc")
-  costUlt1    Numeric(15, 6)? @map("cost_ult1")
+  costUlt1    Numeric(18, 6)? @map("cost_ult1")
   fechaUlt    String?         @map("fecha_ult")
   ultFecha    String?         @map("ult_fecha")
-  pmcom1      Numeric(15, 6)?
+  pmcom1      Numeric(18, 6)?
   imagen      Char(150)?
   carac       Char(2)?
   fechaalta   String?
@@ -332,22 +312,22 @@ model Articulo {
   peso        Char(12)?
   litros      Char(12)?
   observacio  String?
-  unicaja     Numeric(15, 6)?
+  unicaja     Numeric(18, 6)?
   desglose    Int?
-  aranceles   Numeric(15, 6)?
+  aranceles   Numeric(18, 6)?
   definicion2 String?
   subfamilia  Char(4)?
   internet    Boolean?
   vista       Boolean?
   fpag        Char(2)?
   pverde      Boolean?
-  pImporte    Numeric(15, 6)? @map("p_importe")
+  pImporte    Numeric(18, 6)? @map("p_importe")
   pTan        Int?            @map("p_tan")
   lcolor      Boolean?
-  margen      Numeric(20, 4)?
+  margen      Numeric(24, 4)?
   tcp         Char(2)?
   venserie    Boolean?
-  puntos      Numeric(20, 4)?
+  puntos      Numeric(24, 4)?
   desEsc      Boolean?        @map("des_esc")
   tipoArt     Int?            @map("tipo_art")
   modelo      Char(3)?
@@ -356,7 +336,7 @@ model Articulo {
   artImpues   Char(10)?       @map("art_impues")
   nombre2     String?
   colorArt    Char(2)?        @map("color_art")
-  tipoPvp     Numeric(1, 2)?  @map("tipo_pvp")
+  tipoPvp     Numeric(15, 6)? @map("tipo_pvp")
   costEscan   Int?            @map("cost_escan")
   tipoEscan   Int?            @map("tipo_escan")
   artCanon    Boolean?        @map("art_canon")
@@ -372,9 +352,9 @@ model Articulo {
   reportetiq  Char(25)?
   guid        Char(50)?
   importar    Timestamp?
-  dto1        Numeric(20, 2)?
-  dto2        Numeric(20, 2)?
-  dto3        Numeric(20, 2)?
+  dto1        Numeric(24, 2)?
+  dto2        Numeric(24, 2)?
+  dto3        Numeric(24, 2)?
   isp         Boolean?
   grupoiva    Int?
   suplidos    Boolean?
@@ -560,7 +540,7 @@ model Asientos {
   usuario     Char(64)?
   empresa     Char(2)?
   numero      Int?
-  cuenta      Char(8)?
+  cuenta      Char(20)?
   fecha       String?
   definicion  Char(100)?
   debe        Numeric(20, 4)?
@@ -568,7 +548,7 @@ model Asientos {
   tipo        Char(1)?
   punteo      Boolean?
   factura     Char(20)?
-  proveedor   Char(8)?
+  proveedor   Char(20)?
   asi         Char(20)?
   linea       Int?
   importediv  Numeric(20, 4)?
@@ -601,7 +581,7 @@ model Asientos {
   dts         Int?
   manual      Boolean?
   entradaman  Boolean?
-  contrapar   Char(8)?
+  contrapar   Char(20)?
   validcheck  Char(64)?
   invoiceid   Char(50)?
   seImport    Boolean?        @map("se_import")
@@ -986,40 +966,6 @@ model Bancos {
 
   @@index([companyId], map: "idx_bancos_company_id")
   @@map("bancos")
-}
-
-// WARNING: This table has no primary key in the database
-model Banderas {
-  companyId String?    @map("company_id")
-  codigo    Char(3)?
-  bandera   Char(15)?
-  vista     Boolean?
-  guidId    Char(50)?  @map("guid_id")
-  created   Timestamp?
-  modified  Timestamp?
-
-  @@index([companyId], map: "idx_banderas_company_id")
-  @@map("banderas")
-}
-
-// WARNING: This table has no primary key in the database
-model Barras {
-  companyId String?         @map("company_id")
-  articulo  Char(10)?
-  barras    Char(20)?
-  unidades  Numeric(15, 6)?
-  guid      Char(50)?
-  importar  Timestamp?
-  vista     Boolean?
-  tallaerp  Char(4)?
-  colorerp  Char(2)?
-  agruperp  Int?
-  guidId    Char(50)?       @map("guid_id")
-  created   Timestamp?
-  modified  Timestamp?
-
-  @@index([companyId], map: "idx_barras_company_id")
-  @@map("barras")
 }
 
 // WARNING: This table has no primary key in the database
@@ -2244,7 +2190,7 @@ model CliPol {
 // WARNING: This table has no primary key in the database
 model Clientes {
   companyId  String?         @map("company_id")
-  codigo     Char(8)?
+  codigo     String?
   cif        Char(15)?
   nombre     Char(120)?
   nombre2    Char(120)?
@@ -2253,12 +2199,12 @@ model Clientes {
   poblacion  Char(30)?
   provincia  Char(30)?
   pais       Char(3)?
-  ruta       Char(2)?
-  vendedor   Char(2)?
-  tarifa     Char(2)?
-  linDes     Char(2)?        @map("lin_des")
+  ruta       Char(10)?
+  vendedor   Char(10)?
+  tarifa     Char(10)?
+  linDes     Char(10)?       @map("lin_des")
   valorAlb   Boolean?        @map("valor_alb")
-  tipofac    Char(2)?
+  tipofac    Char(10)?
   copiaFra   Int?            @map("copia_fra")
   idioma     Char(3)?
   credito    Numeric(20, 4)?
@@ -2267,13 +2213,13 @@ model Clientes {
   pronto     Numeric(20, 2)?
   diapag     Int?
   diapag2    Int?
-  fpag       Char(2)?
-  tipoIva    Char(2)?        @map("tipo_iva")
+  fpag       Char(10)?
+  tipoIva    Char(10)?       @map("tipo_iva")
   recargo    Boolean?
   comunitari Int?
   retencion  Boolean?
   modoRet    Boolean?        @map("modo_ret")
-  tipoRet    Char(2)?        @map("tipo_ret")
+  tipoRet    Char(10)?       @map("tipo_ret")
   observacio String?
   email      Char(150)?
   http       Char(60)?
@@ -2281,7 +2227,7 @@ model Clientes {
   envCli     Int?            @map("env_cli")
   albafra    Boolean?
   csb        Boolean?
-  ciaCred    Char(2)?        @map("cia_cred")
+  ciaCred    Char(10)?       @map("cia_cred")
   operacio   Char(15)?
   idiomaImp  Char(3)?        @map("idioma_imp")
   agencia    Char(3)?
@@ -2294,7 +2240,7 @@ model Clientes {
   oferta     Boolean?
   bloqCli    Boolean?        @map("bloq_cli")
   fechaBaj   String?         @map("fecha_baj")
-  contrapar  Char(8)?
+  contrapar  String?
   zona       Char(4)?
   posicion   Numeric(6, 2)?
   mensaje    Char(50)?
@@ -2312,7 +2258,7 @@ model Clientes {
   dia6       Boolean?
   dia7       Boolean?
   esGrupo    Boolean?        @map("es_grupo")
-  clifinal   Char(8)?
+  clifinal   String?
   pverde     Boolean?
   tipcredit  Char(3)?
   recarfin   Numeric(20, 3)?
@@ -2358,15 +2304,15 @@ model Clientes {
   guidId     Char(50)?       @map("guid_id")
   created    Timestamp?
   modified   Timestamp?
-  bancoPrev  Char(8)?        @map("banco_prev")
+  bancoPrev  String?         @map("banco_prev")
   cambio     Numeric(20, 6)?
   fecCam     String?         @map("fec_cam")
   plefact    Char(10)?
   dire       Char(30)?
   excluir349 Boolean?
   referCat   Char(25)?       @map("refer_cat")
-  letdefven  Char(2)?
-  letdefrect Char(2)?
+  letdefven  Char(10)?
+  letdefrect Char(10)?
   girmescomp Boolean?
   eticomu    Char(100)?
   validcheck Char(64)?
@@ -2423,27 +2369,6 @@ model Codigos {
 
   @@index([companyId], map: "idx_codigos_company_id")
   @@map("codigos")
-}
-
-// WARNING: This table has no primary key in the database
-model Codpos {
-  companyId String?    @map("company_id")
-  codigo    Char(10)?
-  poblacion Char(30)?
-  provincia Char(30)?
-  linea     Char(5)?
-  vista     Boolean?
-  cpostalm  Char(5)?
-  longi     Char(30)?
-  lati      Char(30)?
-  poblacerp Char(10)?
-  provinerp Char(10)?
-  guidId    Char(50)?  @map("guid_id")
-  created   Timestamp?
-  modified  Timestamp?
-
-  @@index([companyId], map: "idx_codpos_company_id")
-  @@map("codpos")
 }
 
 model Company {
@@ -8339,7 +8264,7 @@ model Promoart {
 // WARNING: This table has no primary key in the database
 model Proveed {
   companyId  String?         @map("company_id")
-  codigo     Char(8)?
+  codigo     Char(20)?
   envPro     Int?            @map("env_pro")
   nombre     Char(120)?
   nombre2    Char(120)?
@@ -8348,15 +8273,15 @@ model Proveed {
   poblacion  Char(30)?
   provincia  Char(30)?
   cif        Char(15)?
-  banco      Char(8)?
-  fpag       Char(2)?
+  banco      Char(20)?
+  fpag       Char(10)?
   pronto     Numeric(20, 2)?
-  tipoIva    Char(2)?        @map("tipo_iva")
+  tipoIva    Char(10)?       @map("tipo_iva")
   recargo    Boolean?
   comunitari Int?
   retencion  Boolean?
   modoRet    Boolean?        @map("modo_ret")
-  tipoRet    Char(2)?        @map("tipo_ret")
+  tipoRet    Char(10)?       @map("tipo_ret")
   email      Char(150)?
   http       Char(60)?
   diasEnt    Int?            @map("dias_ent")
@@ -8369,10 +8294,10 @@ model Proveed {
   diapag2    Numeric(20, 2)?
   vista      Boolean?
   mod349     Boolean?
-  contrapar  Char(8)?
+  contrapar  Char(20)?
   idiomaImp  Char(3)?        @map("idioma_imp")
   cEnt       Char(3)?        @map("c_ent")
-  codAgrup   Char(8)?        @map("cod_agrup")
+  codAgrup   Char(20)?       @map("cod_agrup")
   comision   Numeric(20, 2)?
   csb        Boolean?
   mensaje    Char(50)?
@@ -8506,7 +8431,7 @@ model PuntLiq {
 // WARNING: This table has no primary key in the database
 model Pvp {
   companyId String?         @map("company_id")
-  articulo  Char(10)?
+  articulo  Char(20)?
   tarifa    Char(2)?
   pvp       Numeric(15, 6)?
   pvpiva    Numeric(15, 6)?
@@ -9883,7 +9808,7 @@ model User {
   verificationExpiresAt  Timestamptz?
   resetPasswordExpiresAt Timestamptz?
   resetPasswordToken     String?
-  companyIds             String[]?
+  companyIds             String[]?    @noCheck(elementNotNull)
 
   @@check(expression: "(role = ANY (ARRAY['Admin'::text, 'Management'::text, 'Finance'::text, 'Company Manager'::text, 'Auditor'::text]))", map: "user_role_check_136a03ee")
   @@map("user")

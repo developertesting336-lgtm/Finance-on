@@ -9,6 +9,7 @@ import webhookRoutes from './routes/webhook.js';
 import companyRoutes from './routes/companies.js';
 import dashboardRoutes from './routes/dashboard.js';
 import treasuryRoutes from './routes/treasury.js';
+import resultsRoutes from './routes/results.js';
 import { getSubcompanies } from './controllers/companies.js';
 import { authenticateToken } from './middleware/auth.js';
 
@@ -55,6 +56,7 @@ app.get('/api/subcompanies', authenticateToken, getSubcompanies);
 app.get('/api/subcompanies/:companyId', authenticateToken, getSubcompanies);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/treasury', treasuryRoutes);
+app.use('/api/results', resultsRoutes);
 app.use('/api/webhook', webhookRoutes);
 
 app.get('/api/test', (req: Request, res: Response) => {

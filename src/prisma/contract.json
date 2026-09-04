@@ -4,10 +4,6 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
-    "accesos": {
-      "model": "Accesos",
-      "namespace": "public"
-    },
     "acti_cli": {
       "model": "ActiCli",
       "namespace": "public"
@@ -164,14 +160,6 @@
       "model": "Bancos",
       "namespace": "public"
     },
-    "banderas": {
-      "model": "Banderas",
-      "namespace": "public"
-    },
-    "barras": {
-      "model": "Barras",
-      "namespace": "public"
-    },
     "c_albare": {
       "model": "CAlbare",
       "namespace": "public"
@@ -306,10 +294,6 @@
     },
     "codigos": {
       "model": "Codigos",
-      "namespace": "public"
-    },
-    "codpos": {
-      "model": "Codpos",
       "namespace": "public"
     },
     "company": {
@@ -1445,159 +1429,6 @@
     "namespaces": {
       "public": {
         "models": {
-          "Accesos": {
-            "fields": {
-              "abarraLeft": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "abarraTop": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "barraLeft": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "barraTop": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "companyId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "created": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "kind": "scalar"
-                }
-              },
-              "empresa": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 2
-                  }
-                }
-              },
-              "guidId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 50
-                  }
-                }
-              },
-              "modified": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "kind": "scalar"
-                }
-              },
-              "modulo": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 20
-                  }
-                }
-              },
-              "nivel": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "usuario": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 15
-                  }
-                }
-              },
-              "vista": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/bool@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {},
-            "storage": {
-              "fields": {
-                "abarraLeft": {
-                  "column": "abarra_left"
-                },
-                "abarraTop": {
-                  "column": "abarra_top"
-                },
-                "barraLeft": {
-                  "column": "barra_left"
-                },
-                "barraTop": {
-                  "column": "barra_top"
-                },
-                "companyId": {
-                  "column": "company_id"
-                },
-                "created": {
-                  "column": "created"
-                },
-                "empresa": {
-                  "column": "empresa"
-                },
-                "guidId": {
-                  "column": "guid_id"
-                },
-                "modified": {
-                  "column": "modified"
-                },
-                "modulo": {
-                  "column": "modulo"
-                },
-                "nivel": {
-                  "column": "nivel"
-                },
-                "usuario": {
-                  "column": "usuario"
-                },
-                "vista": {
-                  "column": "vista"
-                }
-              },
-              "namespaceId": "public",
-              "table": "accesos"
-            }
-          },
           "ActiCli": {
             "fields": {
               "actividad": {
@@ -3070,8 +2901,8 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 20,
-                    "scale": 3
+                    "precision": 24,
+                    "scale": 4
                   }
                 }
               },
@@ -3081,8 +2912,8 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 20,
-                    "scale": 3
+                    "precision": 24,
+                    "scale": 4
                   }
                 }
               },
@@ -3865,7 +3696,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 }
@@ -4018,7 +3849,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 }
@@ -4067,7 +3898,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 20,
+                    "precision": 24,
                     "scale": 2
                   }
                 }
@@ -4078,7 +3909,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 20,
+                    "precision": 24,
                     "scale": 2
                   }
                 }
@@ -4089,7 +3920,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 20,
+                    "precision": 24,
                     "scale": 2
                   }
                 }
@@ -4254,7 +4085,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 20,
+                    "precision": 24,
                     "scale": 4
                   }
                 }
@@ -4265,7 +4096,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 }
@@ -4286,7 +4117,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 }
@@ -4345,7 +4176,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 }
@@ -4373,7 +4204,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 }
@@ -4384,7 +4215,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 20,
+                    "precision": 24,
                     "scale": 4
                   }
                 }
@@ -4494,8 +4325,8 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 1,
-                    "scale": 2
+                    "precision": 15,
+                    "scale": 6
                   }
                 }
               },
@@ -4522,7 +4353,7 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 }
@@ -6307,7 +6138,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 }
               },
@@ -6324,7 +6155,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 }
               },
@@ -6567,7 +6398,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 }
               },
@@ -10231,259 +10062,6 @@
               },
               "namespaceId": "public",
               "table": "bancos"
-            }
-          },
-          "Banderas": {
-            "fields": {
-              "bandera": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 15
-                  }
-                }
-              },
-              "codigo": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 3
-                  }
-                }
-              },
-              "companyId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "created": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "kind": "scalar"
-                }
-              },
-              "guidId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 50
-                  }
-                }
-              },
-              "modified": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "kind": "scalar"
-                }
-              },
-              "vista": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/bool@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {},
-            "storage": {
-              "fields": {
-                "bandera": {
-                  "column": "bandera"
-                },
-                "codigo": {
-                  "column": "codigo"
-                },
-                "companyId": {
-                  "column": "company_id"
-                },
-                "created": {
-                  "column": "created"
-                },
-                "guidId": {
-                  "column": "guid_id"
-                },
-                "modified": {
-                  "column": "modified"
-                },
-                "vista": {
-                  "column": "vista"
-                }
-              },
-              "namespaceId": "public",
-              "table": "banderas"
-            }
-          },
-          "Barras": {
-            "fields": {
-              "agruperp": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "articulo": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 10
-                  }
-                }
-              },
-              "barras": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 20
-                  }
-                }
-              },
-              "colorerp": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 2
-                  }
-                }
-              },
-              "companyId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "created": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "kind": "scalar"
-                }
-              },
-              "guid": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 50
-                  }
-                }
-              },
-              "guidId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 50
-                  }
-                }
-              },
-              "importar": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "kind": "scalar"
-                }
-              },
-              "modified": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "kind": "scalar"
-                }
-              },
-              "tallaerp": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 4
-                  }
-                }
-              },
-              "unidades": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/numeric@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "precision": 15,
-                    "scale": 6
-                  }
-                }
-              },
-              "vista": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/bool@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {},
-            "storage": {
-              "fields": {
-                "agruperp": {
-                  "column": "agruperp"
-                },
-                "articulo": {
-                  "column": "articulo"
-                },
-                "barras": {
-                  "column": "barras"
-                },
-                "colorerp": {
-                  "column": "colorerp"
-                },
-                "companyId": {
-                  "column": "company_id"
-                },
-                "created": {
-                  "column": "created"
-                },
-                "guid": {
-                  "column": "guid"
-                },
-                "guidId": {
-                  "column": "guid_id"
-                },
-                "importar": {
-                  "column": "importar"
-                },
-                "modified": {
-                  "column": "modified"
-                },
-                "tallaerp": {
-                  "column": "tallaerp"
-                },
-                "unidades": {
-                  "column": "unidades"
-                },
-                "vista": {
-                  "column": "vista"
-                }
-              },
-              "namespaceId": "public",
-              "table": "barras"
             }
           },
           "CAlbare": {
@@ -22813,11 +22391,8 @@
               "bancoPrev": {
                 "nullable": true,
                 "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 8
-                  }
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
                 }
               },
               "bloqCli": {
@@ -22899,7 +22474,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -22926,21 +22501,15 @@
               "clifinal": {
                 "nullable": true,
                 "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 8
-                  }
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
                 }
               },
               "codigo": {
                 "nullable": true,
                 "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 8
-                  }
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
                 }
               },
               "codpost": {
@@ -22977,11 +22546,8 @@
               "contrapar": {
                 "nullable": true,
                 "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 8
-                  }
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
                 }
               },
               "copiaFra": {
@@ -23312,7 +22878,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -23417,7 +22983,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -23427,7 +22993,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -23454,7 +23020,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -23757,7 +23323,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -23784,7 +23350,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -23818,7 +23384,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -23828,7 +23394,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -23838,7 +23404,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -23908,7 +23474,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -24726,187 +24292,6 @@
               },
               "namespaceId": "public",
               "table": "codigos"
-            }
-          },
-          "Codpos": {
-            "fields": {
-              "codigo": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 10
-                  }
-                }
-              },
-              "companyId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "cpostalm": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 5
-                  }
-                }
-              },
-              "created": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "kind": "scalar"
-                }
-              },
-              "guidId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 50
-                  }
-                }
-              },
-              "lati": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 30
-                  }
-                }
-              },
-              "linea": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 5
-                  }
-                }
-              },
-              "longi": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 30
-                  }
-                }
-              },
-              "modified": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "kind": "scalar"
-                }
-              },
-              "poblacerp": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 10
-                  }
-                }
-              },
-              "poblacion": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 30
-                  }
-                }
-              },
-              "provincia": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 30
-                  }
-                }
-              },
-              "provinerp": {
-                "nullable": true,
-                "type": {
-                  "codecId": "sql/char@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "length": 10
-                  }
-                }
-              },
-              "vista": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/bool@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {},
-            "storage": {
-              "fields": {
-                "codigo": {
-                  "column": "codigo"
-                },
-                "companyId": {
-                  "column": "company_id"
-                },
-                "cpostalm": {
-                  "column": "cpostalm"
-                },
-                "created": {
-                  "column": "created"
-                },
-                "guidId": {
-                  "column": "guid_id"
-                },
-                "lati": {
-                  "column": "lati"
-                },
-                "linea": {
-                  "column": "linea"
-                },
-                "longi": {
-                  "column": "longi"
-                },
-                "modified": {
-                  "column": "modified"
-                },
-                "poblacerp": {
-                  "column": "poblacerp"
-                },
-                "poblacion": {
-                  "column": "poblacion"
-                },
-                "provincia": {
-                  "column": "provincia"
-                },
-                "provinerp": {
-                  "column": "provinerp"
-                },
-                "vista": {
-                  "column": "vista"
-                }
-              },
-              "namespaceId": "public",
-              "table": "codpos"
             }
           },
           "Company": {
@@ -79475,7 +78860,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 }
               },
@@ -79526,7 +78911,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 }
               },
@@ -79536,7 +78921,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 }
               },
@@ -79581,7 +78966,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 }
               },
@@ -79768,7 +79153,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -80088,7 +79473,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -80098,7 +79483,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 }
               },
@@ -81021,7 +80406,7 @@
                   "codecId": "sql/char@1",
                   "kind": "scalar",
                   "typeParams": {
-                    "length": 10
+                    "length": 20
                   }
                 }
               },
@@ -94430,98 +93815,6 @@
       "public": {
         "entries": {
           "table": {
-            "accesos": {
-              "columns": {
-                "abarra_left": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": true
-                },
-                "abarra_top": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": true
-                },
-                "barra_left": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": true
-                },
-                "barra_top": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": true
-                },
-                "company_id": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
-                "created": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "nativeType": "timestamp",
-                  "nullable": true
-                },
-                "empresa": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 2
-                  }
-                },
-                "guid_id": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 50
-                  }
-                },
-                "modified": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "nativeType": "timestamp",
-                  "nullable": true
-                },
-                "modulo": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 20
-                  }
-                },
-                "nivel": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": true
-                },
-                "usuario": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 15
-                  }
-                },
-                "vista": {
-                  "codecId": "pg/bool@1",
-                  "nativeType": "bool",
-                  "nullable": true
-                }
-              },
-              "foreignKeys": [],
-              "indexes": [
-                {
-                  "columns": [
-                    "company_id"
-                  ],
-                  "name": "idx_accesos_company_id",
-                  "unique": false
-                }
-              ],
-              "uniques": []
-            },
             "acti_cli": {
               "columns": {
                 "actividad": {
@@ -95453,8 +94746,8 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 20,
-                    "scale": 3
+                    "precision": 24,
+                    "scale": 4
                   }
                 },
                 "anterior": {
@@ -95462,8 +94755,8 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 20,
-                    "scale": 3
+                    "precision": 24,
+                    "scale": 4
                   }
                 },
                 "ap": {
@@ -95952,7 +95245,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 },
@@ -96071,7 +95364,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 },
@@ -96108,7 +95401,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 20,
+                    "precision": 24,
                     "scale": 2
                   }
                 },
@@ -96117,7 +95410,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 20,
+                    "precision": 24,
                     "scale": 2
                   }
                 },
@@ -96126,7 +95419,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 20,
+                    "precision": 24,
                     "scale": 2
                   }
                 },
@@ -96251,7 +95544,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 20,
+                    "precision": 24,
                     "scale": 4
                   }
                 },
@@ -96260,7 +95553,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 },
@@ -96277,7 +95570,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 },
@@ -96322,7 +95615,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 },
@@ -96344,7 +95637,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 },
@@ -96353,7 +95646,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 20,
+                    "precision": 24,
                     "scale": 4
                   }
                 },
@@ -96437,8 +95730,8 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 1,
-                    "scale": 2
+                    "precision": 15,
+                    "scale": 6
                   }
                 },
                 "ubicacion": {
@@ -96459,7 +95752,7 @@
                   "nativeType": "numeric",
                   "nullable": true,
                   "typeParams": {
-                    "precision": 15,
+                    "precision": 18,
                     "scale": 6
                   }
                 },
@@ -97442,7 +96735,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 },
                 "created": {
@@ -97455,7 +96748,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 },
                 "debe": {
@@ -97644,7 +96937,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 },
                 "punteo": {
@@ -99838,167 +99131,6 @@
                     "company_id"
                   ],
                   "name": "idx_bancos_company_id",
-                  "unique": false
-                }
-              ],
-              "uniques": []
-            },
-            "banderas": {
-              "columns": {
-                "bandera": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 15
-                  }
-                },
-                "codigo": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 3
-                  }
-                },
-                "company_id": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
-                "created": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "nativeType": "timestamp",
-                  "nullable": true
-                },
-                "guid_id": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 50
-                  }
-                },
-                "modified": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "nativeType": "timestamp",
-                  "nullable": true
-                },
-                "vista": {
-                  "codecId": "pg/bool@1",
-                  "nativeType": "bool",
-                  "nullable": true
-                }
-              },
-              "foreignKeys": [],
-              "indexes": [
-                {
-                  "columns": [
-                    "company_id"
-                  ],
-                  "name": "idx_banderas_company_id",
-                  "unique": false
-                }
-              ],
-              "uniques": []
-            },
-            "barras": {
-              "columns": {
-                "agruperp": {
-                  "codecId": "pg/int4@1",
-                  "nativeType": "int4",
-                  "nullable": true
-                },
-                "articulo": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 10
-                  }
-                },
-                "barras": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 20
-                  }
-                },
-                "colorerp": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 2
-                  }
-                },
-                "company_id": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
-                "created": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "nativeType": "timestamp",
-                  "nullable": true
-                },
-                "guid": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 50
-                  }
-                },
-                "guid_id": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 50
-                  }
-                },
-                "importar": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "nativeType": "timestamp",
-                  "nullable": true
-                },
-                "modified": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "nativeType": "timestamp",
-                  "nullable": true
-                },
-                "tallaerp": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 4
-                  }
-                },
-                "unidades": {
-                  "codecId": "pg/numeric@1",
-                  "nativeType": "numeric",
-                  "nullable": true,
-                  "typeParams": {
-                    "precision": 15,
-                    "scale": 6
-                  }
-                },
-                "vista": {
-                  "codecId": "pg/bool@1",
-                  "nativeType": "bool",
-                  "nullable": true
-                }
-              },
-              "foreignKeys": [],
-              "indexes": [
-                {
-                  "columns": [
-                    "company_id"
-                  ],
-                  "name": "idx_barras_company_id",
                   "unique": false
                 }
               ],
@@ -107437,12 +106569,9 @@
                   }
                 },
                 "banco_prev": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 8
-                  }
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "bloq_cli": {
                   "codecId": "pg/bool@1",
@@ -107504,7 +106633,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "cif": {
@@ -107524,20 +106653,14 @@
                   }
                 },
                 "clifinal": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 8
-                  }
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "codigo": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 8
-                  }
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "codpost": {
                   "codecId": "sql/char@1",
@@ -107563,12 +106686,9 @@
                   "nullable": true
                 },
                 "contrapar": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 8
-                  }
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "copia_fra": {
                   "codecId": "pg/int4@1",
@@ -107817,7 +106937,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "fraesi": {
@@ -107898,7 +107018,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "letdefven": {
@@ -107906,7 +107026,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "libre1": {
@@ -107927,7 +107047,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "mensaje": {
@@ -108160,7 +107280,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "skype": {
@@ -108181,7 +107301,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "territerp": {
@@ -108207,7 +107327,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "tipo_ret": {
@@ -108215,7 +107335,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "tipofac": {
@@ -108223,7 +107343,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "tpcretnofi": {
@@ -108279,7 +107399,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "vista": {
@@ -108552,121 +107672,6 @@
                     "company_id"
                   ],
                   "name": "idx_codigos_company_id",
-                  "unique": false
-                }
-              ],
-              "uniques": []
-            },
-            "codpos": {
-              "columns": {
-                "codigo": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 10
-                  }
-                },
-                "company_id": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": true
-                },
-                "cpostalm": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 5
-                  }
-                },
-                "created": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "nativeType": "timestamp",
-                  "nullable": true
-                },
-                "guid_id": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 50
-                  }
-                },
-                "lati": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 30
-                  }
-                },
-                "linea": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 5
-                  }
-                },
-                "longi": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 30
-                  }
-                },
-                "modified": {
-                  "codecId": "pg/timestamp-temporal@1",
-                  "nativeType": "timestamp",
-                  "nullable": true
-                },
-                "poblacerp": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 10
-                  }
-                },
-                "poblacion": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 30
-                  }
-                },
-                "provincia": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 30
-                  }
-                },
-                "provinerp": {
-                  "codecId": "sql/char@1",
-                  "nativeType": "character",
-                  "nullable": true,
-                  "typeParams": {
-                    "length": 10
-                  }
-                },
-                "vista": {
-                  "codecId": "pg/bool@1",
-                  "nativeType": "bool",
-                  "nullable": true
-                }
-              },
-              "foreignKeys": [],
-              "indexes": [
-                {
-                  "columns": [
-                    "company_id"
-                  ],
-                  "name": "idx_codpos_company_id",
                   "unique": false
                 }
               ],
@@ -142093,7 +141098,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 },
                 "c_ent": {
@@ -142134,7 +141139,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 },
                 "codigo": {
@@ -142142,7 +141147,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 },
                 "codpost": {
@@ -142177,7 +141182,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 8
+                    "length": 20
                   }
                 },
                 "created": {
@@ -142322,7 +141327,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "girmescomp": {
@@ -142568,7 +141573,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "tipo_ret": {
@@ -142576,7 +141581,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 2
+                    "length": 10
                   }
                 },
                 "twitter": {
@@ -143030,7 +142035,7 @@
                   "nativeType": "character",
                   "nullable": true,
                   "typeParams": {
-                    "length": 10
+                    "length": 20
                   }
                 },
                 "company_id": {
@@ -150550,11 +149555,6 @@
             "user": {
               "checks": [
                 {
-                  "expression": "array_position(\"companyIds\", NULL) IS NULL",
-                  "name": "user_companyIds_elem_not_null_0e148c1b",
-                  "prefix": "user_companyIds_elem_not_null"
-                },
-                {
                   "expression": "(role = ANY (ARRAY['Admin'::text, 'Management'::text, 'Finance'::text, 'Company Manager'::text, 'Auditor'::text]))",
                   "name": "user_role_check_136a03ee"
                 }
@@ -150564,6 +149564,9 @@
                   "codecId": "pg/text@1",
                   "many": true,
                   "nativeType": "text",
+                  "noCheck": [
+                    "elementNotNull"
+                  ],
                   "nullable": true
                 },
                 "createdAt": {
@@ -151367,7 +150370,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "de53e78e86e500fff3fd3d496f0d01bae758a6a21cc28b2460d2a5056ea5eafe"
+    "storageHash": "8a00ee9ea408fbde9ef40b2a73c2a99091e6f9ee8e3f1ee09ee978b8e2153ee0"
   },
   "capabilities": {
     "postgres": {
