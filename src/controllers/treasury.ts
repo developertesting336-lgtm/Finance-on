@@ -13,12 +13,25 @@ const parseSafeNumber = (val: any): number => {
 };
 
 /**
- * Helper to parse dates safely
+ * Helper to parse dates safely.
+ * Handles Temporal polyfill objects (Temporal.PlainDateTime, Temporal.Instant, etc.)
+ * by converting to string first so `new Date(...)` does not call prohibited .valueOf().
  */
 const parseSafeDate = (val: any): Date | null => {
   if (!val) return null;
-  const d = new Date(val);
-  return isNaN(d.getTime()) ? null : d;
+  try {
+    if (val instanceof Date) {
+      return isNaN(val.getTime()) ? null : val;
+    }
+    // Temporal objects throw TypeError if passed directly to new Date(val) because valueOf is disabled
+    const strVal = typeof val === 'object' && typeof val.toString === 'function'
+      ? val.toString()
+      : String(val);
+    const d = new Date(strVal);
+    return isNaN(d.getTime()) ? null : d;
+  } catch {
+    return null;
+  }
 };
 
 /**
